@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">CodeU Test App</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="consumer_key"></string>
+    <string name="consumer_secret"></string>
+    <string name="token"></string>
+    <string name="token_secret"></string>
+    <string name="google_api_key"></string>
+    <string name="title_activity_my_location">MyLocationActivity</string>
+
+    <string name="longitude_label">Longitude: </string>
+    <string name="latitude_label">Latitude: </string>
+</resources>
