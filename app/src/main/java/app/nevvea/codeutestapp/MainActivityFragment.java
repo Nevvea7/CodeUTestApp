@@ -49,6 +49,7 @@ public class MainActivityFragment extends Fragment {
     double curLongitude;
     double curLatitude;
     Location mLocation;
+    LatLng mapCameraLatLng;
 
     private final String LONG_LABEL = "Longitude: ";
     private final String LAT_LABEL = "Latitude: ";
@@ -87,11 +88,14 @@ public class MainActivityFragment extends Fragment {
             public void onClick(View view) {
                 if (mGoogleApiClient.isConnected()) {
 
-                    mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                    curLongitude = mLocation.getLongitude();
-                    curLatitude = mLocation.getLatitude();
+                    //mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    mapCameraLatLng = mMap.getCameraPosition().target;
+                    // curLongitude = mLocation.getLongitude();
+                    // curLatitude = mLocation.getLatitude();
 
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 16));
+                    curLatitude = mapCameraLatLng.latitude;
+                    curLongitude = mapCameraLatLng.longitude;
+                    //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCameraLatLng, 16));
 
                     longitudeTextView.setText(LONG_LABEL + Double.toString(curLongitude));
                     latitudeTextView.setText(LAT_LABEL + Double.toString(curLatitude));
@@ -102,7 +106,7 @@ public class MainActivityFragment extends Fragment {
                             Yelp yelp = Yelp.getYelp(getActivity());
                             String businesses = yelp.search("restaurants", curLatitude, curLongitude);
                             try {
-                                return processJson(businesses);
+                                return Utility.processJson(businesses);
                             } catch (JSONException e) {
                                 return businesses;
                             }
@@ -121,16 +125,7 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-    String processJson(String jsonStuff) throws JSONException {
-        JSONObject json = new JSONObject(jsonStuff);
-        JSONArray businesses = json.getJSONArray("businesses");
-        ArrayList<String> businessNames = new ArrayList<String>(businesses.length());
-        for (int i = 0; i < businesses.length(); i++) {
-            JSONObject business = businesses.getJSONObject(i);
-            businessNames.add(business.getString("name"));
-        }
-        return TextUtils.join("\n", businessNames);
-    }
+
 
     @Override
     public void onResume() {

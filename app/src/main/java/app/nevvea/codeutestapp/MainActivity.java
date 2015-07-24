@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -16,20 +17,27 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class MainActivity extends ActionBarActivity
         implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
+        GoogleMap.OnCameraChangeListener,
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback {
 
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
+    Marker marker;
     double curLongitude;
     double curLatitude;
+
+    TextView mCameraTextView;
 
     Location mLocation;
 
@@ -52,6 +60,8 @@ public class MainActivity extends ActionBarActivity
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mCameraTextView = (TextView) findViewById(R.id.camera_position);
 
         mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
         mFragment.setmGoogleApiClient(mGoogleApiClient);
@@ -82,9 +92,15 @@ public class MainActivity extends ActionBarActivity
         mMap = googleMap;
 
         mMap.setMyLocationEnabled(true);
-
+        mMap.setOnCameraChangeListener(this);
         mFragment.setmMap(googleMap);
 
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        marker.setPosition(cameraPosition.target);
+        mCameraTextView.setText(cameraPosition.toString());
     }
 
     /**
@@ -94,9 +110,9 @@ public class MainActivity extends ActionBarActivity
     public void onLocationChanged(Location location) {
         curLongitude = location.getLongitude();
         curLatitude = location.getLatitude();
-//
-//        longitudeTextView.setText(LONG_LABEL+ Double.toString(curLongitude));
-//        latitudeTextView.setText(LAT_LABEL + Double.toString(curLatitude));
+
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 16));
+
         }
 
     /**
@@ -113,7 +129,10 @@ public class MainActivity extends ActionBarActivity
         curLongitude = mLocation.getLongitude();
         curLatitude = mLocation.getLatitude();
 
+        // TODO: check if map is null
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 16));
+        marker = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(curLatitude, curLongitude)));
 
 
     }
