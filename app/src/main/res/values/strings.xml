@@ -3,11 +3,12 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-    <string name="consumer_key"></string>
-    <string name="consumer_secret"></string>
-    <string name="token"></string>
-    <string name="token_secret"></string>
-    <string name="google_api_key"></string>
+    <string name="consumer_key">WX1K2JVTdZgRhc7C7hbflw</string>
+    <string name="consumer_secret">xoHPzXr02XikBk50i93BURuTwC0</string>
+    <string name="token">9SnHIK40sPX_FXcenBCBVPH2yVfda9iA</string>
+    <string name="token_secret">EGwF_jd7P15P1DMkAnnBO1AX3Vc</string>
+    <string name="google_api_key">AIzaSyDGU-7ZQGQZP540itcHuCfONGo8p9lDkjk</string>
+
     <string name="title_activity_my_location">MyLocationActivity</string>
 
     <string name="longitude_label">Longitude: </string>

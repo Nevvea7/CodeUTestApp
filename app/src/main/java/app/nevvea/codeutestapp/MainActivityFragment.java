@@ -108,6 +108,7 @@ public class MainActivityFragment extends Fragment {
                             try {
                                 return Utility.processJson(businesses);
                             } catch (JSONException e) {
+                                Log.e("json error", e.toString());
                                 return businesses;
                             }
                         }
