@@ -3,6 +3,7 @@ package app.nevvea.nomnom;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,8 +36,6 @@ public class MainActivity extends ActionBarActivity
     double curLongitude;
     double curLatitude;
 
-    TextView mCameraTextView;
-
     Location mLocation;
 
     MainActivityFragment mFragment;
@@ -58,8 +57,6 @@ public class MainActivity extends ActionBarActivity
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        mCameraTextView = (TextView) findViewById(R.id.camera_position);
 
         mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
         mFragment.setmGoogleApiClient(mGoogleApiClient);
@@ -93,12 +90,12 @@ public class MainActivity extends ActionBarActivity
         mMap.setOnCameraChangeListener(this);
         mFragment.setmMap(googleMap);
 
+        Log.d("google api", "map ready");
     }
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         marker.setPosition(cameraPosition.target);
-        mCameraTextView.setText(cameraPosition.toString());
     }
 
     /**
@@ -132,6 +129,7 @@ public class MainActivity extends ActionBarActivity
         marker = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(curLatitude, curLongitude)));
 
+        Log.d("google api", "connected");
 
     }
 

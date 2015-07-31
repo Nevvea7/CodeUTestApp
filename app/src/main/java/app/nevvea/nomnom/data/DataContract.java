@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
  */
 public class DataContract {
 
-    public static final String CONTENT_AUTHORITY = "app.nevvea.codeutestapp.data";
+    public static final String CONTENT_AUTHORITY = "app.nevvea.nomnom.data";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
@@ -37,6 +37,12 @@ public class DataContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        public static Uri buildHistoryWithRestID(String restid) {
+            return CONTENT_URI.buildUpon().appendPath(restid).build();
+        }
+
+
+
     }
 
     public static final class DetailEntry implements BaseColumns {
@@ -56,11 +62,19 @@ public class DataContract {
         public static final String COLUMN_RESTAURANT_NAME = "rest_name";
         public static final String COLUMN_PHONE = "phone";
         public static final String COLUMN_MOBILE_URL = "mobile_url";
+        public static final String COLUMN_SNIPPET_IMG_UTL = "snippet_image_url";
+        public static final String COLUMN_IMAGE_URL = "snippet_image_url";
 
         public static final String COLUMN_HISTORY_KEY = "history_key";
 
         public static Uri buildDetailUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+
+
+    }
+
+    public static String getIDFromUri(Uri uri) {
+        return uri.getPathSegments().get(1);
     }
 }

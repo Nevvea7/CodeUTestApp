@@ -12,7 +12,7 @@ import app.nevvea.nomnom.data.DataContract.DetailEntry;
  */
 public class DbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     static final String DATABASE_NAME = "restaurants.db";
 
@@ -35,6 +35,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 DetailEntry.COLUMN_RESTAURANT_NAME + " TEXT NOT NULL, " +
                 DetailEntry.COLUMN_PHONE + " TEXT NOT NULL, " +
                 DetailEntry.COLUMN_MOBILE_URL + " TEXT NOT NULL, " +
+                DetailEntry.COLUMN_IMAGE_URL + " TEXT NOT NULL, " +
+                DetailEntry.COLUMN_SNIPPET_IMG_UTL + " TEXT NOT NULL, " +
                 DetailEntry.COLUMN_HISTORY_KEY + " INTEGER NOT NULL " +
                 " );";
 

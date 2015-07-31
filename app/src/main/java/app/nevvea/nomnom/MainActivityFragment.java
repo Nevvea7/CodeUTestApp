@@ -17,11 +17,13 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONException;
 
+import java.util.HashMap;
+
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements OnTaskFinishedListener{
 
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
@@ -33,6 +35,8 @@ public class MainActivityFragment extends Fragment {
     double curLatitude;
     LatLng mapCameraLatLng;
 
+    // to store names of the last returned results
+    HashMap<String, String> restaurants = new HashMap<>();
 
     // These settings are the same as the settings for the map. They will in fact give you updates
     // at the maximal rates currently possible.
@@ -65,32 +69,30 @@ public class MainActivityFragment extends Fragment {
             public void onClick(View view) {
                 if (mGoogleApiClient.isConnected()) {
 
-                    //mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                     mapCameraLatLng = mMap.getCameraPosition().target;
-                    // curLongitude = mLocation.getLongitude();
-                    // curLatitude = mLocation.getLatitude();
 
                     curLatitude = mapCameraLatLng.latitude;
                     curLongitude = mapCameraLatLng.longitude;
 
-                    new AsyncTask<Void, Void, String>() {
-                        @Override
-                        protected String doInBackground(Void... params) {
-                            Yelp yelp = Yelp.getYelp(getActivity());
-                            String businesses = yelp.search("restaurants", curLatitude, curLongitude);
-                            try {
-                                return Utility.processJson(businesses);
-                            } catch (JSONException e) {
-                                Log.e("json error", e.toString());
-                                return businesses;
-                            }
-                        }
-
-                        @Override
-                        protected void onPostExecute(String result) {
-                            yelpResultTextView.setText(result);
-                        }
-                    }.execute();
+                    onLocationChaged();
+//                    new AsyncTask<Void, Void, String>() {
+//                        @Override
+//                        protected String doInBackground(Void... params) {
+//                            Yelp yelp = Yelp.getYelp(getActivity());
+//                            String businesses = yelp.search("restaurants", curLatitude, curLongitude);
+//                            try {
+//                                return Utility.processJson(businesses);
+//                            } catch (JSONException e) {
+//                                Log.e("json error", e.toString());
+//                                return businesses;
+//                            }
+//                        }
+//
+//                        @Override
+//                        protected void onPostExecute(String result) {
+//                            yelpResultTextView.setText(result);
+//                        }
+//                    }.execute();
                 }
             }
         });
@@ -99,7 +101,10 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-
+    public void onLocationChaged() {
+        FetchRestaurantsTask fetchRestaurantsTask = new FetchRestaurantsTask(getActivity(), this);
+        fetchRestaurantsTask.execute(curLatitude, curLongitude);
+    }
 
     @Override
     public void onResume() {
@@ -120,5 +125,15 @@ public class MainActivityFragment extends Fragment {
 
     public void setmMap(GoogleMap googleMap) {
         mMap = googleMap;
+    }
+
+    // called by FetchRestaurantsTask in PostExecute
+    @Override
+    public void onTaskFinished(HashMap<String, String> result) {
+        restaurants = result;
+        for (String key : restaurants.keySet()) {
+            Log.d("map check", key);
+        }
+
     }
 }

@@ -13,12 +13,6 @@
         android:layout_weight="2"
         class="com.google.android.gms.maps.SupportMapFragment"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/camera_position" />
-
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/activity_fragment"
         android:name="app.nevvea.nomnom.MainActivityFragment" tools:layout="@layout/fragment_main"
