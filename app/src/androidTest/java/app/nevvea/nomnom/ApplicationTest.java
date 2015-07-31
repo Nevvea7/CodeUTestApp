@@ -1,4 +1,4 @@
-package app.nevvea.codeutestapp;
+package app.nevvea.nomnom;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

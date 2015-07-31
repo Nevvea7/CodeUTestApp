@@ -1,36 +1,21 @@
-package app.nevvea.codeutestapp;
+package app.nevvea.nomnom;
 
-import android.app.Activity;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 
 
 /**
@@ -41,18 +26,12 @@ public class MainActivityFragment extends Fragment {
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
 
-    TextView longitudeTextView;
-    TextView latitudeTextView;
     TextView yelpResultTextView;
     Button getResultButton;
 
     double curLongitude;
     double curLatitude;
-    Location mLocation;
     LatLng mapCameraLatLng;
-
-    private final String LONG_LABEL = "Longitude: ";
-    private final String LAT_LABEL = "Latitude: ";
 
 
     // These settings are the same as the settings for the map. They will in fact give you updates
@@ -78,8 +57,6 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        longitudeTextView = (TextView) rootView.findViewById(R.id.cur_location_longitude);
-        latitudeTextView = (TextView) rootView.findViewById(R.id.cur_location_latitude);
         yelpResultTextView = (TextView) rootView.findViewById(R.id.cur_location_result);
 
         getResultButton = (Button) rootView.findViewById(R.id.get_location_button);
@@ -95,10 +72,6 @@ public class MainActivityFragment extends Fragment {
 
                     curLatitude = mapCameraLatLng.latitude;
                     curLongitude = mapCameraLatLng.longitude;
-                    //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCameraLatLng, 16));
-
-                    longitudeTextView.setText(LONG_LABEL + Double.toString(curLongitude));
-                    latitudeTextView.setText(LAT_LABEL + Double.toString(curLatitude));
 
                     new AsyncTask<Void, Void, String>() {
                         @Override

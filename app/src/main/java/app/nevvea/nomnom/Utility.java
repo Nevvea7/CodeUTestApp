@@ -1,7 +1,6 @@
-package app.nevvea.codeutestapp;
+package app.nevvea.nomnom;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,8 +22,6 @@ public class Utility {
         Random rand = new Random();
         int index = rand.nextInt(businesses.length());
         JSONObject business = businesses.getJSONObject(index);
-
-        Log.d("index check", Integer.toString(businesses.length()));
 
         businessNames.add(business.getString("name"));
         businessNames.add(business.getString("url"));

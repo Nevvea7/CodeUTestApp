@@ -1,7 +1,6 @@
-package app.nevvea.codeutestapp;
+package app.nevvea.nomnom;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;

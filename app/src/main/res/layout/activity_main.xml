@@ -9,7 +9,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         class="com.google.android.gms.maps.SupportMapFragment"/>
 
     <TextView
@@ -20,9 +21,10 @@
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/activity_fragment"
-        android:name="app.nevvea.codeutestapp.MainActivityFragment" tools:layout="@layout/fragment_main"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        class="app.nevvea.codeutestapp.MainActivityFragment"/>
+        android:name="app.nevvea.nomnom.MainActivityFragment" tools:layout="@layout/fragment_main"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1"
+        class="app.nevvea.nomnom.MainActivityFragment"/>
 
 
 

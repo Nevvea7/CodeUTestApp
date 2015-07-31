@@ -11,25 +11,12 @@
         android:text="Get Location/Restaurants"
         android:id="@+id/get_location_button" />
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Longitude: "
+        android:text="Go: "
         android:layout_below="@id/get_location_button"
-        android:id="@+id/cur_location_longitude" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Latitude: "
-        android:layout_below="@id/cur_location_longitude"
-        android:id="@+id/cur_location_latitude" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="List of results: "
-        android:layout_below="@id/cur_location_latitude"
         android:id="@+id/cur_location_result_label" />
 
     <TextView

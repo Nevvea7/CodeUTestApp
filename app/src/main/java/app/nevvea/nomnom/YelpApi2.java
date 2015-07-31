@@ -1,4 +1,4 @@
-package app.nevvea.codeutestapp;
+package app.nevvea.nomnom;
 
 import org.scribe.builder.api.DefaultApi10a;
 import org.scribe.model.Token;
