@@ -96,6 +96,8 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         marker.setPosition(cameraPosition.target);
+        curLongitude = cameraPosition.target.latitude;
+        curLatitude = cameraPosition.target.longitude;
     }
 
     /**
@@ -105,10 +107,7 @@ public class MainActivity extends ActionBarActivity
     public void onLocationChanged(Location location) {
         curLongitude = location.getLongitude();
         curLatitude = location.getLatitude();
-
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 16));
-
-        }
+    }
 
     /**
      * Callback called when connected to GCore. Implementation of {@link com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks}.

@@ -33,7 +33,7 @@ public class DbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_DETAIL_TABLE = "CREATE TABLE " + DetailEntry.TABLE_NAME + " (" +
                 DetailEntry.COLUMN_RESTAURANT_ID + " TEXT PRIMARY KEY, " +
                 DetailEntry.COLUMN_RESTAURANT_NAME + " TEXT NOT NULL, " +
-                DetailEntry.COLUMN_PHONE + " TEXT NOT NULL, " +
+                DetailEntry.COLUMN_PHONE + " TEXT, " +
                 DetailEntry.COLUMN_MOBILE_URL + " TEXT NOT NULL, " +
                 DetailEntry.COLUMN_IMAGE_URL + " TEXT NOT NULL, " +
                 DetailEntry.COLUMN_ADDRESS + " TEXT NOT NULL " +

@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Vector;
 
 import app.nevvea.nomnom.data.DataContract.DetailEntry;
@@ -17,13 +18,18 @@ import app.nevvea.nomnom.data.DataContract.DetailEntry;
  * Created by Anna on 7/23/15.
  */
 public class Utility {
-    static HashMap<String, String> map = new HashMap<>();
+        static HashMap<String, String> map = new HashMap<>();
+    public static String processJson(String jsonStuff, Context mContext) throws JSONException {
 
-    public static HashMap<String, String> processJson(String jsonStuff, Context mContext) throws JSONException {
         JSONObject json = new JSONObject(jsonStuff);
         JSONArray businesses = json.getJSONArray("businesses");
 
         Vector<ContentValues> cVVector = new Vector<ContentValues>(businesses.length());
+        Random random = new Random();
+        int index = random.nextInt(businesses.length());
+        String returnName;
+
+        returnName = businesses.getJSONObject(index).getString("name");
 
         // bulk insert to database
         for (int i = 0; i < businesses.length(); i++) {
@@ -36,12 +42,28 @@ public class Utility {
             JSONObject business = businesses.getJSONObject(i);
             restID = business.getString("id");
             restName = business.getString("name");
-            phone = business.getString("phone");
-            mobileURL = getUrlFromJson(business.getString("mobile_url"));
-            imageURL = getUrlFromJson(business.getString("image_url"));
+
+            try {
+                phone = business.getString("phone");
+            } catch (JSONException e) {
+                phone = "";
+            }
+            try {
+                imageURL = getUrlFromJson(business.getString("image_url"));
+            } catch (JSONException e) {
+                imageURL = "";
+            }
+            try {
+                mobileURL = getUrlFromJson(business.getString("mobile_url"));
+            } catch (JSONException e) {
+                mobileURL = "";
+            }
+
+
             JSONArray location = business.getJSONObject("location").getJSONArray("display_address");
 
-            map.put(restName, restID);
+            //map.put(restName, restID);
+
 
             StringBuilder locationSb = new StringBuilder();
             locationSb.append(location.get(0));
@@ -70,9 +92,9 @@ public class Utility {
             inserted = mContext.getContentResolver().bulkInsert(DetailEntry.CONTENT_URI, cvArray);
         }
 
-        Log.d("Utility check", "FetchWeatherTask Complete. " + inserted + " Inserted");
+        Log.d("Utility check", "FetchRestaurantTask Complete. " + inserted + " Inserted");
 
-        return map;
+        return returnName;
     }
 
     private static String getUrlFromJson(String jsonUrl) {

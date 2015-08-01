@@ -233,10 +233,16 @@ public class DataProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        long _id = db.insert(DataContract.DetailEntry.TABLE_NAME, null, value);
-                        if (_id != -1) {
-                            returnCount++;
+
+                        // insert only if the restaurant is not in our db
+                        if (idNotInDB(DataContract.DetailEntry.TABLE_NAME,
+                                value.getAsString(DataContract.DetailEntry.COLUMN_RESTAURANT_ID))) {
+                            long _id = db.insert(DataContract.DetailEntry.TABLE_NAME, null, value);
+                            if (_id != -1) {
+                                returnCount++;
+                            }
                         }
+
                     }
                     db.setTransactionSuccessful();
                 } finally {
@@ -246,6 +252,27 @@ public class DataProvider extends ContentProvider {
                 return returnCount;
             default:
                 return super.bulkInsert(uri, values);
+        }
+    }
+
+    /**
+     * Check if a restaurant is already in our database.
+     * @param tablename the table we want to check against;
+     * @param id restaurant's id
+     * @return
+     */
+    public boolean idNotInDB(String tablename, String id) {
+
+        final SQLiteDatabase checkDb = mOpenHelper.getReadableDatabase();
+        final String query = "select count(*) from " + tablename + " where rest_id = ?";
+
+        Cursor c = checkDb.rawQuery(query, new String[]{id});
+        if (c.getCount() == 0) {
+            c.close();
+            return true;
+        }else {
+            c.close();
+            return false;
         }
     }
 }

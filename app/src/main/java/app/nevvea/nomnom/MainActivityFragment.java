@@ -1,6 +1,5 @@
 package app.nevvea.nomnom;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,13 +10,17 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONException;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 
 /**
@@ -37,6 +40,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
     // to store names of the last returned results
     HashMap<String, String> restaurants = new HashMap<>();
+    List<String> keySet;
 
     public MainActivityFragment() {
     }
@@ -62,12 +66,25 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             public void onClick(View view) {
                 if (mGoogleApiClient.isConnected()) {
 
+
                     mapCameraLatLng = mMap.getCameraPosition().target;
 
                     curLatitude = mapCameraLatLng.latitude;
                     curLongitude = mapCameraLatLng.longitude;
 
-                    onLocationChaged();
+                    onLocationChaged(curLatitude, curLongitude);
+
+//                    if (keySet != null && keySet.size() > 0) {
+//                        Random random = new Random();
+//                        int index = random.nextInt(keySet.size());
+//                        yelpResultTextView.setText(keySet.get(index));
+//                    } else {
+//                        yelpResultTextView.setText("No fit restaurant around this point. Try somewhere else!");
+//                    }
+
+
+                } else {
+                    //TODO say that internet is not connected
                 }
             }
         });
@@ -76,9 +93,9 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     }
 
 
-    public void onLocationChaged() {
+    public void onLocationChaged(double lat, double longt) {
         FetchRestaurantsTask fetchRestaurantsTask = new FetchRestaurantsTask(getActivity(), this);
-        fetchRestaurantsTask.execute(curLatitude, curLongitude);
+        fetchRestaurantsTask.execute(lat, longt);
     }
 
     @Override
@@ -104,11 +121,16 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
     // called by FetchRestaurantsTask in PostExecute
     @Override
-    public void onTaskFinished(HashMap<String, String> result) {
-        restaurants = result;
-        for (String key : restaurants.keySet()) {
-            Log.d("map check", key);
-        }
+    public void onTaskFinished(String result) {
+        //restaurants = result;
+//        if (restaurants != null) {
+//            Set<String> tmp = restaurants.keySet();
+//            keySet = new ArrayList<>();
+//            for (String t: tmp) {
+//                keySet.add(t);
+//            }
+//        }
 
+        yelpResultTextView.setText(result);
     }
 }

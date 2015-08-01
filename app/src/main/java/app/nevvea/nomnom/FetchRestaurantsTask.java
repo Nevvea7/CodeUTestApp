@@ -11,7 +11,7 @@ import java.util.HashMap;
 /**
  * Created by Anna on 7/31/15.
  */
-public class FetchRestaurantsTask extends AsyncTask<Double, Void, HashMap<String, String>>{
+public class FetchRestaurantsTask extends AsyncTask<Double, Void, String>{
     private Context mContext;
     MainActivityFragment mFragment;
 
@@ -21,7 +21,7 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, HashMap<String
     }
 
     @Override
-    protected HashMap<String, String> doInBackground(Double... params) {
+    protected String doInBackground(Double... params) {
         Yelp yelp = Yelp.getYelp(mContext);
         String businesses = yelp.search("restaurants", params[0], params[1]);
         try {
@@ -33,7 +33,7 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, HashMap<String
     }
 
     @Override
-    protected void onPostExecute(HashMap<String, String> result) {
+    protected void onPostExecute(String result) {
         mFragment.onTaskFinished(result);
     }
 }
