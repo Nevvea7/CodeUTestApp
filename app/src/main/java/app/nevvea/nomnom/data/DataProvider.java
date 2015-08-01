@@ -26,6 +26,9 @@ public class DataProvider extends ContentProvider {
     private static final String sDetailIDSelection =
             DataContract.DetailEntry.TABLE_NAME + '.' +
                     DataContract.DetailEntry.COLUMN_RESTAURANT_ID + " = ? ";
+    private static final String sHistoryIDSelection =
+            DataContract.HistoryEntry.TABLE_NAME + '.' +
+                    DataContract.HistoryEntry.COLUMN_RESTAURANT_ID + " = ? ";
 
     static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -54,6 +57,34 @@ public class DataProvider extends ContentProvider {
                 retCursor = getDetailByID(uri, projection);
                 break;
             }
+            case DETAIL: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        DataContract.DetailEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case HISTORY_WITH_REST_ID: {
+                retCursor = getHistoryByID(uri, projection);
+                break;
+            }
+            case HISTORY: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        DataContract.HistoryEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -61,9 +92,22 @@ public class DataProvider extends ContentProvider {
         return retCursor;
     }
 
+    private Cursor getHistoryByID(Uri uri, String[] projection) {
+        String restID = DataContract.getIDFromUri(uri);
+        return mOpenHelper.getReadableDatabase().query(
+                DataContract.HistoryEntry.TABLE_NAME,
+                projection,
+                sHistoryIDSelection,
+                new String[]{restID},
+                null,
+                null,
+                null
+        );
+    }
+
     private Cursor getDetailByID(Uri uri, String[] projection) {
         String restID = DataContract.getIDFromUri(uri);
-        mOpenHelper.getReadableDatabase().query(
+        return mOpenHelper.getReadableDatabase().query(
                 DataContract.DetailEntry.TABLE_NAME,
                 projection,
                 sDetailIDSelection,
@@ -72,7 +116,6 @@ public class DataProvider extends ContentProvider {
                 null,
                 null
         );
-        return null;
     }
 
     @Override
@@ -113,11 +156,16 @@ public class DataProvider extends ContentProvider {
 
         switch (match) {
             // we want only 1 detail so it's an item
+            case DETAIL_WITH_ID:
+                return DataContract.DetailEntry.CONTENT_ITEM_TYPE;
             case DETAIL:
                 return DataContract.DetailEntry.CONTENT_ITEM_TYPE;
             // we want a list of history so it's dir
             case HISTORY:
                 return DataContract.HistoryEntry.CONTENT_TYPE;
+            // or we can check if a single restaurant is in the history list
+            case HISTORY_WITH_REST_ID:
+                return DataContract.HistoryEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

@@ -38,13 +38,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     // to store names of the last returned results
     HashMap<String, String> restaurants = new HashMap<>();
 
-    // These settings are the same as the settings for the map. They will in fact give you updates
-    // at the maximal rates currently possible.
-    private static final LocationRequest REQUEST = LocationRequest.create()
-            .setInterval(5000)         // 5 seconds
-            .setFastestInterval(16)    // 16ms = 60fps
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
     public MainActivityFragment() {
     }
 
@@ -75,24 +68,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
                     curLongitude = mapCameraLatLng.longitude;
 
                     onLocationChaged();
-//                    new AsyncTask<Void, Void, String>() {
-//                        @Override
-//                        protected String doInBackground(Void... params) {
-//                            Yelp yelp = Yelp.getYelp(getActivity());
-//                            String businesses = yelp.search("restaurants", curLatitude, curLongitude);
-//                            try {
-//                                return Utility.processJson(businesses);
-//                            } catch (JSONException e) {
-//                                Log.e("json error", e.toString());
-//                                return businesses;
-//                            }
-//                        }
-//
-//                        @Override
-//                        protected void onPostExecute(String result) {
-//                            yelpResultTextView.setText(result);
-//                        }
-//                    }.execute();
                 }
             }
         });

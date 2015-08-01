@@ -1,8 +1,10 @@
 package app.nevvea.nomnom.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 import java.util.HashSet;
 
@@ -62,11 +64,11 @@ public class TestDb extends AndroidTestCase {
 
         // Build a HashSet of all of the column names we want to look for
         final HashSet<String> locationColumnHashSet = new HashSet<String>();
-        locationColumnHashSet.add(DataContract.DetailEntry._ID);
         locationColumnHashSet.add(DataContract.DetailEntry.COLUMN_RESTAURANT_NAME);
-        locationColumnHashSet.add(DataContract.DetailEntry.COLUMN_HISTORY_KEY);
         locationColumnHashSet.add(DataContract.DetailEntry.COLUMN_MOBILE_URL);
         locationColumnHashSet.add(DataContract.DetailEntry.COLUMN_PHONE);
+        locationColumnHashSet.add(DataContract.DetailEntry.COLUMN_RESTAURANT_ID);
+        locationColumnHashSet.add(DataContract.DetailEntry.COLUMN_IMAGE_URL);
 
         int columnNameIndex = c.getColumnIndex("name");
         do {
@@ -81,5 +83,40 @@ public class TestDb extends AndroidTestCase {
         db.close();
     }
 
+    public void testDetailTable() {
+        Log.d("test called", "lalala");
+        DbHelper dbHelper = new DbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        ContentValues values = TestUtilities.createDetailValues();
+
+        long detailRowID = db.insert(DataContract.DetailEntry.TABLE_NAME, null, values);
+        assertTrue(detailRowID != -1);
+
+        Cursor detailCursor = db.query(
+                DataContract.DetailEntry.TABLE_NAME,  // Table to Query
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null, // columns to group by
+                null, // columns to filter by row groups
+                null  // sort order
+        );
+
+        // Move the cursor to the first valid database row and check to see if we have any rows
+        assertTrue( "Error: No Records returned from location query", detailCursor.moveToFirst() );
+
+        // Fifth Step: Validate the location Query
+        TestUtilities.validateCurrentRecord("testInsertReadDb weatherEntry failed to validate",
+                detailCursor, values);
+
+        // Move the cursor to demonstrate that there is only one record in the database
+        assertFalse("Error: More than one record returned from weather query",
+                detailCursor.moveToNext());
+
+        // Sixth Step: Close cursor and database
+        detailCursor.close();
+        dbHelper.close();
+    }
 
 }

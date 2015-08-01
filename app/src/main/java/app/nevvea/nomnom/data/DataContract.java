@@ -62,10 +62,7 @@ public class DataContract {
         public static final String COLUMN_RESTAURANT_NAME = "rest_name";
         public static final String COLUMN_PHONE = "phone";
         public static final String COLUMN_MOBILE_URL = "mobile_url";
-        public static final String COLUMN_SNIPPET_IMG_UTL = "snippet_image_url";
         public static final String COLUMN_IMAGE_URL = "snippet_image_url";
-
-        public static final String COLUMN_HISTORY_KEY = "history_key";
 
         public static Uri buildDetailUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
