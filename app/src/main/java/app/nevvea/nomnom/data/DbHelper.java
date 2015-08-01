@@ -12,7 +12,7 @@ import app.nevvea.nomnom.data.DataContract.DetailEntry;
  */
 public class DbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     static final String DATABASE_NAME = "restaurants.db";
 
@@ -35,7 +35,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 DetailEntry.COLUMN_RESTAURANT_NAME + " TEXT NOT NULL, " +
                 DetailEntry.COLUMN_PHONE + " TEXT NOT NULL, " +
                 DetailEntry.COLUMN_MOBILE_URL + " TEXT NOT NULL, " +
-                DetailEntry.COLUMN_IMAGE_URL + " TEXT NOT NULL " +
+                DetailEntry.COLUMN_IMAGE_URL + " TEXT NOT NULL, " +
+                DetailEntry.COLUMN_ADDRESS + " TEXT NOT NULL " +
                 " );";
 
         // since we wan the history table to reference detail table, we create the detail table first

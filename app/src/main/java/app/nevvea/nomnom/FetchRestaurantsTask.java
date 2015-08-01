@@ -19,12 +19,13 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, HashMap<String
         mContext = context;
         mFragment = fragment;
     }
+
     @Override
     protected HashMap<String, String> doInBackground(Double... params) {
         Yelp yelp = Yelp.getYelp(mContext);
         String businesses = yelp.search("restaurants", params[0], params[1]);
         try {
-            return Utility.processJson(businesses);
+            return Utility.processJson(businesses, mContext);
         } catch (JSONException e) {
             Log.e("json error", e.toString());
             return null;

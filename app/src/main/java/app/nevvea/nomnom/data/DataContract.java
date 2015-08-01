@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
  */
 public class DataContract {
 
-    public static final String CONTENT_AUTHORITY = "app.nevvea.nomnom.data";
+    public static final String CONTENT_AUTHORITY = "app.nevvea.nomnom";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
@@ -63,11 +63,14 @@ public class DataContract {
         public static final String COLUMN_PHONE = "phone";
         public static final String COLUMN_MOBILE_URL = "mobile_url";
         public static final String COLUMN_IMAGE_URL = "snippet_image_url";
+        public static final String COLUMN_ADDRESS = "address";
 
         public static Uri buildDetailUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
+        public static Uri buildDetailWithId(String ID) {
+            return CONTENT_URI.buildUpon().appendPath(ID).build();
+        }
 
     }
 
