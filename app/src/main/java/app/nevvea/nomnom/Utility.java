@@ -26,20 +26,24 @@ public class Utility {
         JSONObject json = new JSONObject(jsonStuff);
         JSONArray businesses = json.getJSONArray("businesses");
 
+        // prevent random.nextint error
+        if (businesses.length() <= 0) {
+            return new SearchResult("There's no restaurant around this point. Try somewhere else!", null, null);
+        }
         Vector<ContentValues> cVVector = new Vector<>(businesses.length());
 
         // get a random object as return result
         Random random = new Random();
         int index = random.nextInt(businesses.length());
         JSONObject returnRest = businesses.getJSONObject(index);
-        String returnName;
-        String returnAddr;
+        String returnName, returnAddr, returnID;
 
         returnName = returnRest.getString("name");
         returnAddr = getAddressFromJson(returnRest.getJSONObject("location").getJSONArray("display_address"));
         String queryString = formatAddressToQuery(returnAddr);
+        returnID = returnRest.getString("id");
 
-        SearchResult searchResult = new SearchResult(returnName, queryString);
+        SearchResult searchResult = new SearchResult(returnName, queryString, returnID);
 
         // bulk insert to database
         for (int i = 0; i < businesses.length(); i++) {

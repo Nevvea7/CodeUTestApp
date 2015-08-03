@@ -95,7 +95,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        marker.setPosition(cameraPosition.target);
+        // marker.setPosition(cameraPosition.target);
         curLongitude = cameraPosition.target.latitude;
         curLatitude = cameraPosition.target.longitude;
     }
@@ -125,8 +125,6 @@ public class MainActivity extends ActionBarActivity
 
         // TODO: check if map is null
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 16));
-        marker = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(curLatitude, curLongitude)));
 
         Log.d("google api", "connected");
 

@@ -47,8 +47,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
 
@@ -65,6 +63,8 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             public void onClick(View view) {
                 if (mGoogleApiClient.isConnected()) {
 
+                    // clear all existing markers
+                    mMap.clear();
 
                     mapCameraLatLng = mMap.getCameraPosition().target;
 
@@ -112,18 +112,11 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     // called by FetchRestaurantsTask in PostExecute
     @Override
     public void onTaskFinished(SearchResult result) {
-        //restaurants = result;
-//        if (restaurants != null) {
-//            Set<String> tmp = restaurants.keySet();
-//            keySet = new ArrayList<>();
-//            for (String t: tmp) {
-//                keySet.add(t);
-//            }
-//        }
-
         yelpResultTextView.setText(result.getRestName());
-        FetchLatLongTask fetchLatLongTask = new FetchLatLongTask(getActivity(), this);
-        fetchLatLongTask.execute(result.getAddress());
+        if (result.getAddress() != null) {
+            FetchLatLongTask fetchLatLongTask = new FetchLatLongTask(getActivity(), this);
+            fetchLatLongTask.execute(result.getAddress());
+        }
     }
 
     @Override

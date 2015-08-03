@@ -6,10 +6,12 @@ package app.nevvea.nomnom.data;
 public class SearchResult {
     private String restName;
     private String address;
+    private String restID;
 
-    public SearchResult(String name, String address) {
+    public SearchResult(String name, String address, String restID) {
         this.restName = name;
         this.address = address;
+        this.restID = restID;
     }
 
 

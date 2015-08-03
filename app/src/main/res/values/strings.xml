@@ -10,5 +10,6 @@
     <string name="google_api_key">AIzaSyC5ra0_NZORElREa6OWWgb9qaGNrNFdhhc</string>
 
     <string name="title_activity_my_location">MyLocationActivity</string>
+    <string name="title_activity_detail">DetailActivity</string>
 
 </resources>

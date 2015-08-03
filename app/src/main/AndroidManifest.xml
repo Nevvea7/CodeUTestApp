@@ -16,7 +16,7 @@
             android:value="@string/google_api_key" />
 
         <activity
-            android:name="app.nevvea.nomnom.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,9 +24,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
-            android:authorities="app.nevvea.nomnom"
-            android:name=".data.DataProvider" />
+            android:name=".data.DataProvider"
+            android:authorities="app.nevvea.nomnom" />
+
+        <activity
+            android:name=".data.DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="app.nevvea.nomnom.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
