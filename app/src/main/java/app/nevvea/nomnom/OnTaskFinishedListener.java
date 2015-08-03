@@ -1,10 +1,14 @@
 package app.nevvea.nomnom;
 
-import java.util.HashMap;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import app.nevvea.nomnom.data.SearchResult;
 
 /**
  * Created by Anna on 7/31/15.
  */
 public interface OnTaskFinishedListener {
-    void onTaskFinished(String result);
+    void onTaskFinished(SearchResult result);
+    void onTaskFinished(LatLng latLng);
 }

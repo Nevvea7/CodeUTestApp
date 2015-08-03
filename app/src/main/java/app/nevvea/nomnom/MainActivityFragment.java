@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
+import app.nevvea.nomnom.data.SearchResult;
 
 
 /**
@@ -37,10 +40,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     double curLongitude;
     double curLatitude;
     LatLng mapCameraLatLng;
-
-    // to store names of the last returned results
-    HashMap<String, String> restaurants = new HashMap<>();
-    List<String> keySet;
 
     public MainActivityFragment() {
     }
@@ -73,15 +72,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
                     curLongitude = mapCameraLatLng.longitude;
 
                     onLocationChaged(curLatitude, curLongitude);
-
-//                    if (keySet != null && keySet.size() > 0) {
-//                        Random random = new Random();
-//                        int index = random.nextInt(keySet.size());
-//                        yelpResultTextView.setText(keySet.get(index));
-//                    } else {
-//                        yelpResultTextView.setText("No fit restaurant around this point. Try somewhere else!");
-//                    }
-
 
                 } else {
                     //TODO say that internet is not connected
@@ -121,7 +111,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
     // called by FetchRestaurantsTask in PostExecute
     @Override
-    public void onTaskFinished(String result) {
+    public void onTaskFinished(SearchResult result) {
         //restaurants = result;
 //        if (restaurants != null) {
 //            Set<String> tmp = restaurants.keySet();
@@ -131,6 +121,15 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 //            }
 //        }
 
-        yelpResultTextView.setText(result);
+        yelpResultTextView.setText(result.getRestName());
+        FetchLatLongTask fetchLatLongTask = new FetchLatLongTask(getActivity(), this);
+        fetchLatLongTask.execute(result.getAddress());
+    }
+
+    @Override
+    public void onTaskFinished(LatLng latLng) {
+        mMap.addMarker(new MarkerOptions()
+            .position(latLng));
+        Log.d("finished check", latLng.toString());
     }
 }

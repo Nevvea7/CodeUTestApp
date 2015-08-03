@@ -8,10 +8,12 @@ import org.json.JSONException;
 
 import java.util.HashMap;
 
+import app.nevvea.nomnom.data.SearchResult;
+
 /**
  * Created by Anna on 7/31/15.
  */
-public class FetchRestaurantsTask extends AsyncTask<Double, Void, String>{
+public class FetchRestaurantsTask extends AsyncTask<Double, Void, SearchResult>{
     private Context mContext;
     MainActivityFragment mFragment;
 
@@ -21,7 +23,7 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, String>{
     }
 
     @Override
-    protected String doInBackground(Double... params) {
+    protected SearchResult doInBackground(Double... params) {
         Yelp yelp = Yelp.getYelp(mContext);
         String businesses = yelp.search("restaurants", params[0], params[1]);
         try {
@@ -33,7 +35,7 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, String>{
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(SearchResult result) {
         mFragment.onTaskFinished(result);
     }
 }

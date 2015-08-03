@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,23 +15,31 @@ import java.util.Random;
 import java.util.Vector;
 
 import app.nevvea.nomnom.data.DataContract.DetailEntry;
+import app.nevvea.nomnom.data.SearchResult;
 
 /**
  * Created by Anna on 7/23/15.
  */
 public class Utility {
-        static HashMap<String, String> map = new HashMap<>();
-    public static String processJson(String jsonStuff, Context mContext) throws JSONException {
+    public static SearchResult processJson(String jsonStuff, Context mContext) throws JSONException {
 
         JSONObject json = new JSONObject(jsonStuff);
         JSONArray businesses = json.getJSONArray("businesses");
 
-        Vector<ContentValues> cVVector = new Vector<ContentValues>(businesses.length());
+        Vector<ContentValues> cVVector = new Vector<>(businesses.length());
+
+        // get a random object as return result
         Random random = new Random();
         int index = random.nextInt(businesses.length());
+        JSONObject returnRest = businesses.getJSONObject(index);
         String returnName;
+        String returnAddr;
 
-        returnName = businesses.getJSONObject(index).getString("name");
+        returnName = returnRest.getString("name");
+        returnAddr = getAddressFromJson(returnRest.getJSONObject("location").getJSONArray("display_address"));
+        String queryString = formatAddressToQuery(returnAddr);
+
+        SearchResult searchResult = new SearchResult(returnName, queryString);
 
         // bulk insert to database
         for (int i = 0; i < businesses.length(); i++) {
@@ -63,15 +73,6 @@ public class Utility {
             JSONArray location = business.getJSONObject("location").getJSONArray("display_address");
 
             //map.put(restName, restID);
-
-
-            StringBuilder locationSb = new StringBuilder();
-            locationSb.append(location.get(0));
-            for (int j = 1; j < location.length(); j++) {
-                locationSb.append(", ");
-                locationSb.append(location.get(j));
-            }
-
             ContentValues detailValues = new ContentValues();
 
             detailValues.put(DetailEntry.COLUMN_RESTAURANT_ID, restID);
@@ -79,7 +80,7 @@ public class Utility {
             detailValues.put(DetailEntry.COLUMN_PHONE, phone);
             detailValues.put(DetailEntry.COLUMN_MOBILE_URL, mobileURL);
             detailValues.put(DetailEntry.COLUMN_IMAGE_URL, imageURL);
-            detailValues.put(DetailEntry.COLUMN_ADDRESS, locationSb.toString());
+            detailValues.put(DetailEntry.COLUMN_ADDRESS, getAddressFromJson(location));
 
             cVVector.add(detailValues);
         }
@@ -94,10 +95,40 @@ public class Utility {
 
         Log.d("Utility check", "FetchRestaurantTask Complete. " + inserted + " Inserted");
 
-        return returnName;
+        return searchResult;
     }
 
     private static String getUrlFromJson(String jsonUrl) {
         return jsonUrl.replace("\\", "");
     }
+
+    /**
+     * @param location
+     * @return
+     */
+    private static String getAddressFromJson(JSONArray location) {
+        StringBuilder locationSb = new StringBuilder();
+        try {
+            locationSb.append(location.get(0));
+            for (int j = 1; j < location.length(); j++) {
+                locationSb.append(", ");
+                locationSb.append(location.get(j));
+            }
+        } catch (JSONException e) {
+            // TODO: do something with the error
+            e.printStackTrace();
+        }
+        return locationSb.toString();
+    }
+
+    /**
+     * @param address
+     * @return query-formatted string for geocoding query
+     */
+    private static String formatAddressToQuery(String address) {
+        String returnStr = address.replaceAll("\\s+", "+");
+        Log.d("uri check", returnStr);
+        return returnStr;
+    }
+
 }
