@@ -28,7 +28,7 @@ public class Utility {
 
         // prevent random.nextint error
         if (businesses.length() <= 0) {
-            return new SearchResult("There's no restaurant around this point. Try somewhere else!", null, null);
+            return null;
         }
         Vector<ContentValues> cVVector = new Vector<>(businesses.length());
 
@@ -36,14 +36,14 @@ public class Utility {
         Random random = new Random();
         int index = random.nextInt(businesses.length());
         JSONObject returnRest = businesses.getJSONObject(index);
-        String returnName, returnAddr, returnID;
+        String returnName, returnID;
+        LatLng returnLatLng;
 
         returnName = returnRest.getString("name");
-        returnAddr = getAddressFromJson(returnRest.getJSONObject("location").getJSONArray("display_address"));
-        String queryString = formatAddressToQuery(returnAddr);
+        returnLatLng = geLatLngFromJson(returnRest.getJSONObject("location").getJSONObject("coordinate"));
         returnID = returnRest.getString("id");
 
-        SearchResult searchResult = new SearchResult(returnName, queryString, returnID);
+        SearchResult searchResult = new SearchResult(returnName, returnLatLng, returnID);
 
         // bulk insert to database
         for (int i = 0; i < businesses.length(); i++) {
@@ -75,8 +75,7 @@ public class Utility {
 
 
             JSONArray location = business.getJSONObject("location").getJSONArray("display_address");
-
-            //map.put(restName, restID);
+            
             ContentValues detailValues = new ContentValues();
 
             detailValues.put(DetailEntry.COLUMN_RESTAURANT_ID, restID);
@@ -102,6 +101,17 @@ public class Utility {
         return searchResult;
     }
 
+    private static LatLng geLatLngFromJson(JSONObject coordinates) {
+        try {
+            double lat = coordinates.getDouble("latitude");
+            double lng = coordinates.getDouble("longitude");
+            return new LatLng(lat, lng);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private static String getUrlFromJson(String jsonUrl) {
         return jsonUrl.replace("\\", "");
     }
@@ -125,14 +135,5 @@ public class Utility {
         return locationSb.toString();
     }
 
-    /**
-     * @param address
-     * @return query-formatted string for geocoding query
-     */
-    private static String formatAddressToQuery(String address) {
-        String returnStr = address.replaceAll("\\s+", "+");
-        Log.d("uri check", returnStr);
-        return returnStr;
-    }
 
 }

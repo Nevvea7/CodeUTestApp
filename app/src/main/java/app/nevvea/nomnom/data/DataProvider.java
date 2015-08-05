@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 /**
  * Created by Anna on 7/29/15.
@@ -233,7 +234,6 @@ public class DataProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-
                         // insert only if the restaurant is not in our db
                         if (idNotInDB(DataContract.DetailEntry.TABLE_NAME,
                                 value.getAsString(DataContract.DetailEntry.COLUMN_RESTAURANT_ID))) {
@@ -242,7 +242,6 @@ public class DataProvider extends ContentProvider {
                                 returnCount++;
                             }
                         }
-
                     }
                     db.setTransactionSuccessful();
                 } finally {
@@ -264,9 +263,10 @@ public class DataProvider extends ContentProvider {
     public boolean idNotInDB(String tablename, String id) {
 
         final SQLiteDatabase checkDb = mOpenHelper.getReadableDatabase();
-        final String query = "select count(*) from " + tablename + " where rest_id = ?";
+        final String query = "select * from " + tablename + " where rest_id = ?";
 
         Cursor c = checkDb.rawQuery(query, new String[]{id});
+        c.moveToFirst();
         if (c.getCount() == 0) {
             c.close();
             return true;

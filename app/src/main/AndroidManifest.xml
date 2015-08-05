@@ -30,7 +30,7 @@
             android:authorities="app.nevvea.nomnom" />
 
         <activity
-            android:name=".data.DetailActivity"
+            android:name=".DetailActivity"
             android:label="@string/title_activity_detail"
             android:parentActivityName=".MainActivity" >
             <meta-data

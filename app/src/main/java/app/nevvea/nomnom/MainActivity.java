@@ -1,10 +1,11 @@
 package app.nevvea.nomnom;
 
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -19,7 +20,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class MainActivity extends ActionBarActivity
@@ -28,7 +28,8 @@ public class MainActivity extends ActionBarActivity
         LocationListener,
         GoogleMap.OnCameraChangeListener,
         GoogleMap.OnMyLocationButtonClickListener,
-        OnMapReadyCallback {
+        OnMapReadyCallback,
+        MainActivityFragment.Callback {
 
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
@@ -124,9 +125,8 @@ public class MainActivity extends ActionBarActivity
         curLatitude = mLocation.getLatitude();
 
         // TODO: check if map is null
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 16));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 15.5f));
 
-        Log.d("google api", "connected");
 
     }
 
@@ -153,4 +153,16 @@ public class MainActivity extends ActionBarActivity
         // (the camera animates to the user's current position).
         return false;
             }
+
+    /**
+     * Callback from MainActivityFragment to start other Activities
+     * @param mUri
+     */
+    @Override
+    public void onItemSelected(Uri mUri) {
+        Log.d("uri check", mUri.toString());
+        Intent intent = new Intent(this, DetailActivity.class)
+                .setData(mUri);
+        startActivity(intent);
+    }
 }

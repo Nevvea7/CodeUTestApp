@@ -1,6 +1,7 @@
 package app.nevvea.nomnom;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;

@@ -1,5 +1,7 @@
 package app.nevvea.nomnom;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import app.nevvea.nomnom.data.DataContract;
 import app.nevvea.nomnom.data.SearchResult;
 
 
@@ -34,12 +37,14 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
 
+
     TextView yelpResultTextView;
     Button getResultButton;
 
     double curLongitude;
     double curLatitude;
     LatLng mapCameraLatLng;
+    SearchResult mSearchResult;
 
     public MainActivityFragment() {
     }
@@ -49,13 +54,24 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         super.onCreate(savedInstanceState);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         yelpResultTextView = (TextView) rootView.findViewById(R.id.cur_location_result);
+
+        yelpResultTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mSearchResult != null) {
+                    ((Callback) getActivity())
+                            .onItemSelected(DataContract.DetailEntry.buildDetailWithId(
+                                    mSearchResult.getRestID()
+                            ));
+                }
+            }
+        });
 
         getResultButton = (Button) rootView.findViewById(R.id.get_location_button);
         getResultButton.setOnClickListener(new View.OnClickListener() {
@@ -112,10 +128,20 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     // called by FetchRestaurantsTask in PostExecute
     @Override
     public void onTaskFinished(SearchResult result) {
-        yelpResultTextView.setText(result.getRestName());
-        if (result.getAddress() != null) {
-            FetchLatLongTask fetchLatLongTask = new FetchLatLongTask(getActivity(), this);
-            fetchLatLongTask.execute(result.getAddress());
+        mSearchResult = result;
+        if (result == null) {
+            yelpResultTextView.setText("There's no restaurant around this point. Try somewhere else!");
+        }
+        else {
+            yelpResultTextView.setText(result.getRestName());
+            if (result.getLatLng() != null) {
+                mMap.addMarker(new MarkerOptions()
+                    .position(result.getLatLng()));
+            }
+//            if (result.getAddress() != null) {
+//                FetchLatLongTask fetchLatLongTask = new FetchLatLongTask(getActivity(), this);
+//                fetchLatLongTask.execute(result.getAddress());
+//            }
         }
     }
 
@@ -124,5 +150,17 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         mMap.addMarker(new MarkerOptions()
             .position(latLng));
         Log.d("finished check", latLng.toString());
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri mUri);
     }
 }
