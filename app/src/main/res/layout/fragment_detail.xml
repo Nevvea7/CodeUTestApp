@@ -9,25 +9,30 @@
     <TextView  android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/detail_rest_name"
+        android:text="name"
         />
     <TextView  android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/detail_rest_img"
         android:layout_below="@id/detail_rest_name"
+        android:text="img url"
         />
     <TextView  android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/detail_rest_phone"
         android:layout_below="@id/detail_rest_img"
+        android:text="phone"
         />
     <TextView  android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/detail_rest_addr"
         android:layout_below="@id/detail_rest_phone"
+        android:text="addr"
         />
     <TextView  android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/detail_rest_url"
+        android:text="url"
         android:layout_below="@id/detail_rest_addr"
         />
 </RelativeLayout>

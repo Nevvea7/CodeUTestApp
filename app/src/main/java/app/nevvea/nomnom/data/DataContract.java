@@ -30,8 +30,8 @@ public class DataContract {
         // Table name
         public static final String TABLE_NAME = "history";
 
-        public static final String COLUMN_DATE = "date";
         public static final String COLUMN_RESTAURANT_ID = "rest_id";
+        public static final String COLUMN_RESTAURANT_NAME = "rest_name";
 
         public static Uri buildHistoryUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

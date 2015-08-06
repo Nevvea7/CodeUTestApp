@@ -1,5 +1,6 @@
 package app.nevvea.nomnom;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
     TextView yelpResultTextView;
     Button getResultButton;
+    Button addToBlacklistButton;
 
     double curLongitude;
     double curLatitude;
@@ -79,8 +81,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             public void onClick(View view) {
                 if (mGoogleApiClient.isConnected()) {
 
-                    // clear all existing markers
-                    mMap.clear();
+
 
                     mapCameraLatLng = mMap.getCameraPosition().target;
 
@@ -95,11 +96,32 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             }
         });
 
+        addToBlacklistButton = (Button) rootView.findViewById(R.id.add_to_blacklist_button);
+        addToBlacklistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // add this restaurant to blacklist
+                ContentValues historyValues = new ContentValues();
+
+                historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_ID, mSearchResult.getRestID());
+                historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME, mSearchResult.getRestName());
+
+                Uri uri = getActivity().getContentResolver().insert(DataContract.HistoryEntry.CONTENT_URI,
+                        historyValues);
+                Log.d("history check", uri.toString());
+
+                // call random function again since the user doesn't want this restaurant
+                onLocationChaged(curLatitude, curLongitude);
+            }
+        });
+
         return rootView;
     }
 
 
     public void onLocationChaged(double lat, double longt) {
+        // clear all existing markers
+        mMap.clear();
         FetchRestaurantsTask fetchRestaurantsTask = new FetchRestaurantsTask(getActivity(), this);
         fetchRestaurantsTask.execute(lat, longt);
     }
@@ -138,18 +160,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
                 mMap.addMarker(new MarkerOptions()
                     .position(result.getLatLng()));
             }
-//            if (result.getAddress() != null) {
-//                FetchLatLongTask fetchLatLongTask = new FetchLatLongTask(getActivity(), this);
-//                fetchLatLongTask.execute(result.getAddress());
-//            }
         }
-    }
-
-    @Override
-    public void onTaskFinished(LatLng latLng) {
-        mMap.addMarker(new MarkerOptions()
-            .position(latLng));
-        Log.d("finished check", latLng.toString());
     }
 
     /**

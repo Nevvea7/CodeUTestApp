@@ -12,7 +12,7 @@ import app.nevvea.nomnom.data.DataContract.DetailEntry;
  */
 public class DbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 8;
 
     static final String DATABASE_NAME = "restaurants.db";
 
@@ -25,9 +25,7 @@ public class DbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_HISTORY_TABLE = "CREATE TABLE " + HistoryEntry.TABLE_NAME + " (" +
                 HistoryEntry._ID + " INTEGER PRIMARY KEY, " +
                 HistoryEntry.COLUMN_RESTAURANT_ID + " TEXT NOT NULL, " +
-                HistoryEntry.COLUMN_DATE + " INTEGER NOT NULL, " +
-                " FOREIGN KEY (" + HistoryEntry.COLUMN_RESTAURANT_ID + ") REFERENCES " +
-                DetailEntry.TABLE_NAME + " (" + DetailEntry.COLUMN_RESTAURANT_ID + ")" +
+                HistoryEntry.COLUMN_RESTAURANT_NAME + " TEXT NOT NULL " +
                 " );";
 
         final String SQL_CREATE_DETAIL_TABLE = "CREATE TABLE " + DetailEntry.TABLE_NAME + " (" +

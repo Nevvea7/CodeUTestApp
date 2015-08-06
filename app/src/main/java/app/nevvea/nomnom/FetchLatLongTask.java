@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * Call Google GeoCoding API to convert address to LatLng
+ * Not in use right now
  * Created by Anna on 8/3/15.
  */
 public class FetchLatLongTask extends AsyncTask<String, Void, LatLng> {
@@ -79,8 +81,4 @@ public class FetchLatLongTask extends AsyncTask<String, Void, LatLng> {
         return null;
     }
 
-    @Override
-    protected void onPostExecute(LatLng latLng) {
-        mFragment.onTaskFinished(latLng);
-    }
 }

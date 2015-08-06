@@ -19,5 +19,12 @@
         android:layout_below="@id/get_location_button"
         android:id="@+id/cur_location_result" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cur_location_result"
+        android:text="Don't show this place again"
+        android:id="@+id/add_to_blacklist_button" />
+
 
 </RelativeLayout>

@@ -10,5 +10,4 @@ import app.nevvea.nomnom.data.SearchResult;
  */
 public interface OnTaskFinishedListener {
     void onTaskFinished(SearchResult result);
-    void onTaskFinished(LatLng latLng);
 }

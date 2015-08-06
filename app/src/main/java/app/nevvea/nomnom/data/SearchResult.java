@@ -3,11 +3,11 @@ package app.nevvea.nomnom.data;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
+ * Wrapper object to return search result from Utility.processJson to
  * Created by Anna on 8/3/15.
  */
 public class SearchResult {
     private String restName;
-    private String address;
     private String restID;
     private LatLng latLng;
 
@@ -19,10 +19,6 @@ public class SearchResult {
 
     public String getRestID() {
         return restID;
-    }
-
-    public String getAddress() {
-        return address;
     }
 
     public LatLng getLatLng() {

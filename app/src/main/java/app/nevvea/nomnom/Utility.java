@@ -2,6 +2,9 @@ package app.nevvea.nomnom;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -10,17 +13,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Random;
 import java.util.Vector;
 
+import app.nevvea.nomnom.data.DataContract;
 import app.nevvea.nomnom.data.DataContract.DetailEntry;
+import app.nevvea.nomnom.data.DbHelper;
 import app.nevvea.nomnom.data.SearchResult;
 
 /**
  * Created by Anna on 7/23/15.
  */
 public class Utility {
+
+    /**
+     * called from MainActivityFragment when get restaurant button is pressed
+     * @param jsonStuff
+     * @param mContext
+     * @return
+     * @throws JSONException
+     */
     public static SearchResult processJson(String jsonStuff, Context mContext) throws JSONException {
 
         JSONObject json = new JSONObject(jsonStuff);
@@ -38,10 +50,17 @@ public class Utility {
         JSONObject returnRest = businesses.getJSONObject(index);
         String returnName, returnID;
         LatLng returnLatLng;
+        returnID = returnRest.getString("id");
+        while (isInBlacklist(returnID, mContext)) {
+            index = random.nextInt(businesses.length());
+            returnRest = businesses.getJSONObject(index);
+            returnID = returnRest.getString("id");
+            Log.d("history check", returnID);
+        }
+
 
         returnName = returnRest.getString("name");
         returnLatLng = geLatLngFromJson(returnRest.getJSONObject("location").getJSONObject("coordinate"));
-        returnID = returnRest.getString("id");
 
         SearchResult searchResult = new SearchResult(returnName, returnLatLng, returnID);
 
@@ -54,6 +73,7 @@ public class Utility {
             String imageURL;
 
             JSONObject business = businesses.getJSONObject(i);
+            Log.d("json check", business.toString());
             restID = business.getString("id");
             restName = business.getString("name");
 
@@ -69,13 +89,14 @@ public class Utility {
             }
             try {
                 mobileURL = getUrlFromJson(business.getString("mobile_url"));
+                Log.d("json check mobile", mobileURL);
             } catch (JSONException e) {
                 mobileURL = "";
             }
 
 
             JSONArray location = business.getJSONObject("location").getJSONArray("display_address");
-            
+
             ContentValues detailValues = new ContentValues();
 
             detailValues.put(DetailEntry.COLUMN_RESTAURANT_ID, restID);
@@ -99,6 +120,21 @@ public class Utility {
         Log.d("Utility check", "FetchRestaurantTask Complete. " + inserted + " Inserted");
 
         return searchResult;
+    }
+
+    private static boolean isInBlacklist(String returnID, Context context) {
+        final SQLiteDatabase checkDb = new DbHelper(context).getReadableDatabase();
+        final String query = "select * from " + DataContract.HistoryEntry.TABLE_NAME + " where rest_id = ?";
+
+        Cursor c = checkDb.rawQuery(query, new String[]{returnID});
+        c.moveToFirst();
+        if (c.getCount() == 0) {
+            c.close();
+            return false;
+        }else {
+            c.close();
+            return true;
+        }
     }
 
     private static LatLng geLatLngFromJson(JSONObject coordinates) {

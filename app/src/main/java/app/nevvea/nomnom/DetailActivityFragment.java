@@ -96,6 +96,7 @@ public class DetailActivityFragment extends Fragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
+
             String restName = data.getString(COL_REST_NAME);
             restNameTextView.setText(restName);
 
@@ -109,7 +110,7 @@ public class DetailActivityFragment extends Fragment
             restUrlTextView.setText(restUrl);
 
             String restAddr = data.getString(COL_ADDR);
-            restUrlTextView.setText(restAddr);
+            restAddrTextView.setText(restAddr);
         }
     }
 
