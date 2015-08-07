@@ -1,22 +1,28 @@
 package app.nevvea.nomnom;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import app.nevvea.nomnom.data.DataContract;
 
 public class BlackListActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private Context mContext;
 
     private BlackListAdapter mBlackListAdapter;
     private ListView mListView;
@@ -29,8 +35,9 @@ public class BlackListActivity extends AppCompatActivity
             DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME
     };
 
-    static final int COL_REST_ID = 0;
-    static final int COL_REST_NAME = 1;
+    static final int COL_ID = 0;
+    static final int COL_REST_ID = 1;
+    static final int COL_REST_NAME = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +46,44 @@ public class BlackListActivity extends AppCompatActivity
 
         getLoaderManager().initLoader(HISTORY_LOADER, null, this);
 
+        mContext = this;
+
         mBlackListAdapter = new BlackListAdapter(this, null);
         mListView = (ListView) findViewById(R.id.blacklist_listView);
         mListView.setAdapter(mBlackListAdapter);
+
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Cursor c = (Cursor) adapterView.getItemAtPosition(position);
+                Log.d("click check", Integer.toString(position));
+                if (c != null) {
+                    Log.d("click check", "cursor not null");
+                    final String restID = c.getString(BlackListActivity.COL_REST_ID);
+                    //pop up alert
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+                    alertDialogBuilder
+                            .setMessage("Do you want to remove this place from the black list?")
+                            .setPositiveButton("Yeah, I'll give it a chance.", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    mContext.getContentResolver().delete(DataContract.HistoryEntry.CONTENT_URI
+                                            , "rest_id = ?", new String[]{restID});
+                                }
+                            });
+
+                    //create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    //show it
+                    alertDialog.show();
+                }
+            }
+        });
+
+
+
     }
 
 

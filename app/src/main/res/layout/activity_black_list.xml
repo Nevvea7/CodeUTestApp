@@ -8,4 +8,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/blacklist_listView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No items in the blacklist yet!"
+        android:id="@+id/blacklist_empty" />
 </LinearLayout>

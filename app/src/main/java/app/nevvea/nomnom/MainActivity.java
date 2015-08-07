@@ -35,7 +35,6 @@ public class MainActivity extends ActionBarActivity
 
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
-    Marker marker;
     double curLongitude;
     double curLatitude;
 
@@ -61,30 +60,41 @@ public class MainActivity extends ActionBarActivity
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // pass the GoogleApiClient to MainActivityFragment
         mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
         mFragment.setmGoogleApiClient(mGoogleApiClient);
 
     }
-        private void buildGoogleApiClient() {
+
+    /**
+     * Helper method to build the GoogleApiClient
+     */
+    private void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
     }
+
+    // TODO: record the marker/restaurant results and show it when activity is resumed.
     @Override
     public void onResume() {
             super.onResume();
             mGoogleApiClient.connect();
-            }
+    }
 
     @Override
     public void onPause() {
             super.onPause();
             mGoogleApiClient.disconnect();
-            }
+    }
 
 
+    /**
+     * Once the map is ready, pass the reference to MainActivityFragment.
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -93,12 +103,15 @@ public class MainActivity extends ActionBarActivity
         mMap.setOnCameraChangeListener(this);
         mFragment.setmMap(googleMap);
 
-        Log.d("google api", "map ready");
     }
 
+    /**
+     * On camera change, record the new lat/lng
+     * If implement the location bar this method will be useful.
+     * @param cameraPosition the new camera position from which we can get our latlng
+     */
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        // marker.setPosition(cameraPosition.target);
         curLongitude = cameraPosition.target.latitude;
         curLatitude = cameraPosition.target.longitude;
     }
@@ -113,7 +126,11 @@ public class MainActivity extends ActionBarActivity
     }
 
     /**
-     * Callback called when connected to GCore. Implementation of {@link com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks}.
+     * Callback called when connected to GCore.
+     * Implementation of {@link com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks}.
+     *
+     * Once connected, get the lat/lng of the current location and set the map's focus
+     * to the current location.
      */
     @Override
     public void onConnected(Bundle connectionHint) {
@@ -150,7 +167,6 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onMyLocationButtonClick() {
-            Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
@@ -158,11 +174,11 @@ public class MainActivity extends ActionBarActivity
 
     /**
      * Callback from MainActivityFragment to start other Activities
-     * @param mUri
+     * @param mUri uri with a restaurant's id. Passed to DetailActivity so that DetailActivity
+     *             can query the database with the url
      */
     @Override
     public void onItemSelected(Uri mUri) {
-        Log.d("uri check", mUri.toString());
         Intent intent = new Intent(this, DetailActivity.class)
                 .setData(mUri);
         startActivity(intent);
@@ -186,6 +202,8 @@ public class MainActivity extends ActionBarActivity
         if (id == R.id.action_settings) {
             return true;
         }
+
+        // start the blacklist activity
         if (id == R.id.action_blacklist) {
             startActivity(new Intent(this, BlackListActivity.class));
             return true;

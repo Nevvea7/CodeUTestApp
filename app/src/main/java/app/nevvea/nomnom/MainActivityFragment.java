@@ -81,8 +81,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             public void onClick(View view) {
                 if (mGoogleApiClient.isConnected()) {
 
-
-
                     mapCameraLatLng = mMap.getCameraPosition().target;
 
                     curLatitude = mapCameraLatLng.latitude;
