@@ -6,11 +6,11 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +26,6 @@ public class BlackListActivity extends ListActivity
     private Context mContext;
 
     private BlackListAdapter mBlackListAdapter;
-    private ListView mListView;
 
     private int HISTORY_LOADER = 0;
 
@@ -50,13 +49,12 @@ public class BlackListActivity extends ListActivity
         mContext = this;
 
         mBlackListAdapter = new BlackListAdapter(this, null);
-        mListView = (ListView) findViewById(R.id.blacklist_listView);
-        mListView.setAdapter(mBlackListAdapter);
+        setListAdapter(mBlackListAdapter);
 
-
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ListView mListView = getListView();
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Cursor c = (Cursor) adapterView.getItemAtPosition(position);
                 Log.d("click check", Integer.toString(position));
                 if (c != null) {
@@ -80,11 +78,23 @@ public class BlackListActivity extends ListActivity
                     //show it
                     alertDialog.show();
                 }
+                return true;
             }
         });
+    }
 
-
-
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        Cursor c = (Cursor) l.getItemAtPosition(position);
+        if (c != null) {
+            Log.d("click check", "cursor not null");
+            final String restID = c.getString(BlackListActivity.COL_REST_ID);
+            Uri mUri = DataContract.DetailEntry.buildDetailWithId(restID);
+            // link to detail activity
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .setData(mUri);
+            startActivity(intent);
+        }
     }
 
 
@@ -115,7 +125,6 @@ public class BlackListActivity extends ListActivity
         String sortOrder = DataContract.HistoryEntry._ID + " ASC";
         Uri historyUri = DataContract.HistoryEntry.CONTENT_URI;
 
-        Log.d("cursor check", "created");
         Cursor test = this.getContentResolver().query(
                 DataContract.HistoryEntry.CONTENT_URI,
                 null,

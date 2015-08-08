@@ -1,7 +1,6 @@
 package app.nevvea.nomnom;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,24 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 import app.nevvea.nomnom.data.DataContract;
 import app.nevvea.nomnom.data.SearchResult;
@@ -87,18 +75,21 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         addToBlacklistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // add this restaurant to blacklist
-                ContentValues historyValues = new ContentValues();
+                // check if the search result returned null
+                if (mSearchResult != null) {
+                    // add this restaurant to blacklist
+                    ContentValues historyValues = new ContentValues();
 
-                historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_ID, mSearchResult.getRestID());
-                historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME, mSearchResult.getRestName());
+                    historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_ID, mSearchResult.getRestID());
+                    historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME, mSearchResult.getRestName());
 
-                Uri uri = getActivity().getContentResolver().insert(DataContract.HistoryEntry.CONTENT_URI,
-                        historyValues);
-                Log.d("history check", uri.toString());
+                    Uri uri = getActivity().getContentResolver().insert(DataContract.HistoryEntry.CONTENT_URI,
+                            historyValues);
+                    Log.d("history check", uri.toString());
 
-                // call random function again since the user doesn't want this restaurant
-                onLocationChaged(curLatitude, curLongitude);
+                    // call random function again since the user doesn't want this restaurant
+                    onLocationChaged(curLatitude, curLongitude);
+                }
             }
         });
 
