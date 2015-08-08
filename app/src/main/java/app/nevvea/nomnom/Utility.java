@@ -139,10 +139,12 @@ public class Utility {
      * TODO: merge this with the method in DataProvider
      */
     private static boolean isInBlacklist(String returnID, Context context) {
-        final SQLiteDatabase checkDb = new DbHelper(context).getReadableDatabase();
+        final SQLiteDatabase checkDb = new DbHelper(context).getWritableDatabase();
         final String query = "select * from " + DataContract.HistoryEntry.TABLE_NAME + " where rest_id = ?";
 
         Cursor c = checkDb.rawQuery(query, new String[]{returnID});
+        // TODO: check what's wrong here
+        if (c == null) return false;
         c.moveToFirst();
         if (c.getCount() == 0) {
             c.close();

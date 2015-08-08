@@ -1,6 +1,7 @@
 package app.nevvea.nomnom;
 
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -19,7 +20,7 @@ import android.widget.ListView;
 
 import app.nevvea.nomnom.data.DataContract;
 
-public class BlackListActivity extends AppCompatActivity
+public class BlackListActivity extends ListActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private Context mContext;

@@ -10,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -40,13 +42,16 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
 
     TextView yelpResultTextView;
-    Button getResultButton;
-    Button addToBlacklistButton;
+    TextView instructionTextView;
+    BootstrapButton addToBlacklistButton;
+    BootstrapButton showDetailButton;
+    LinearLayout linearContainer;
 
     double curLongitude;
     double curLatitude;
-    LatLng mapCameraLatLng;
     SearchResult mSearchResult;
+
+    Boolean hasRestaurant = false;
 
     public MainActivityFragment() {
     }
@@ -61,9 +66,12 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        instructionTextView = (TextView) rootView.findViewById(R.id.instruction_text);
+        linearContainer = (LinearLayout) rootView.findViewById(R.id.mainfragment_linear);
         yelpResultTextView = (TextView) rootView.findViewById(R.id.cur_location_result);
 
-        yelpResultTextView.setOnClickListener(new View.OnClickListener() {
+        showDetailButton = (BootstrapButton) rootView.findViewById(R.id.goto_detail_button);
+        showDetailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mSearchResult != null) {
@@ -75,26 +83,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             }
         });
 
-        getResultButton = (Button) rootView.findViewById(R.id.get_location_button);
-        getResultButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mGoogleApiClient.isConnected()) {
-
-                    mapCameraLatLng = mMap.getCameraPosition().target;
-
-                    curLatitude = mapCameraLatLng.latitude;
-                    curLongitude = mapCameraLatLng.longitude;
-
-                    onLocationChaged(curLatitude, curLongitude);
-
-                } else {
-                    //TODO say that internet is not connected
-                }
-            }
-        });
-
-        addToBlacklistButton = (Button) rootView.findViewById(R.id.add_to_blacklist_button);
+        addToBlacklistButton = (BootstrapButton) rootView.findViewById(R.id.add_to_blacklist_button);
         addToBlacklistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,20 +111,14 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         mMap.clear();
         FetchRestaurantsTask fetchRestaurantsTask = new FetchRestaurantsTask(getActivity(), this);
         fetchRestaurantsTask.execute(lat, longt);
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mGoogleApiClient.connect();
+        if (!hasRestaurant) {
+            hasRestaurant = true;
+            instructionTextView.setVisibility(View.GONE);
+            linearContainer.setVisibility(View.VISIBLE);
+            addToBlacklistButton.setVisibility(View.VISIBLE);
+        }
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mGoogleApiClient.disconnect();
-    }
-
 
     public void setmGoogleApiClient(GoogleApiClient googleApiClient) {
         mGoogleApiClient = googleApiClient;
@@ -145,15 +128,22 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         mMap = googleMap;
     }
 
+    public void setLatLng(double lat, double lng){
+        curLatitude = lat;
+        curLongitude = lng;
+    }
+
     // called by FetchRestaurantsTask in PostExecute
     @Override
     public void onTaskFinished(SearchResult result) {
         mSearchResult = result;
         if (result == null) {
             yelpResultTextView.setText("There's no restaurant around this point. Try somewhere else!");
+            showDetailButton.setVisibility(View.GONE);
         }
         else {
             yelpResultTextView.setText(result.getRestName());
+            showDetailButton.setVisibility(View.VISIBLE);
             if (result.getLatLng() != null) {
                 mMap.addMarker(new MarkerOptions()
                     .position(result.getLatLng()));
@@ -171,5 +161,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
          * DetailFragmentCallback for when an item has been selected.
          */
         public void onItemSelected(Uri mUri);
+
     }
 }

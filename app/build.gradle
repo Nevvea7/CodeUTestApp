@@ -24,4 +24,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'org.scribe:scribe:1.3.5'
     compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.beardedhen:androidbootstrap:1.1.1'
 }

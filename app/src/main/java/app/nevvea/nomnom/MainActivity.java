@@ -8,8 +8,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -38,6 +40,9 @@ public class MainActivity extends ActionBarActivity
     double curLongitude;
     double curLatitude;
 
+    BootstrapButton getResultButton;
+
+
     Location mLocation;
 
     MainActivityFragment mFragment;
@@ -64,6 +69,24 @@ public class MainActivity extends ActionBarActivity
         mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
         mFragment.setmGoogleApiClient(mGoogleApiClient);
 
+        getResultButton = (BootstrapButton) findViewById(R.id.get_location_button);
+        getResultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mGoogleApiClient.isConnected()) {
+
+                    curLatitude = mMap.getCameraPosition().target.latitude;
+                    curLongitude = mMap.getCameraPosition().target.longitude;
+
+                    mFragment.setLatLng(curLatitude, curLongitude);
+                    mFragment.onLocationChaged(curLatitude, curLongitude);
+
+                } else {
+                    //TODO say that internet is not connected
+                }
+            }
+        });
+
     }
 
     /**
@@ -80,14 +103,16 @@ public class MainActivity extends ActionBarActivity
     // TODO: record the marker/restaurant results and show it when activity is resumed.
     @Override
     public void onResume() {
-            super.onResume();
-            mGoogleApiClient.connect();
+        super.onResume();
+        mGoogleApiClient.connect();
+        Log.d("activity check", "on resume called");
     }
 
     @Override
     public void onPause() {
-            super.onPause();
-            mGoogleApiClient.disconnect();
+        super.onPause();
+        mGoogleApiClient.disconnect();
+        Log.d("activity check", "on pause called");
     }
 
 
