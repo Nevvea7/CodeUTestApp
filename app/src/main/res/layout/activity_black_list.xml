@@ -1,24 +1,16 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
-    >
+    android:background="@color/white">
 
-    <ListView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@android:id/list"/>
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/activity_fragment"
+        android:name="app.nevvea.nomnom.BlackListActivityFragment" tools:layout="@layout/fragment_main"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1"
+        class="app.nevvea.nomnom.BlackListActivityFragment"/>
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:text="No items in the blacklist yet!"
-        android:id="@android:id/empty"
-        />
 
 </LinearLayout>
