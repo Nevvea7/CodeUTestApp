@@ -7,11 +7,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import app.nevvea.nomnom.R;
 
-public class DetailActivity extends ActionBarActivity {
+public class DetailActivity extends ActionBarActivity
+            implements OnMapReadyCallback{
 
     static final String REST_NAME_TAG = "REST_NAME_TAG";
+    static final String REST_LAT_TAG = "REST_LAT_TAG";
+    static final String REST_LNG_TAG = "REST_LNG_TAG";
+    static final String DETAIL_BUNDLE_TAG = "DETAIL_BUNDLE_TAG";
+
+    private GoogleMap mMap;
+    private LatLng curLatLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,10 +36,20 @@ public class DetailActivity extends ActionBarActivity {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailActivityFragment.DETAIL_URI, getIntent().getData());
 
-            getSupportActionBar().setTitle(getIntent().getStringExtra(REST_NAME_TAG));
+            Bundle extras = getIntent().getBundleExtra(DETAIL_BUNDLE_TAG);
+            if (extras != null) {
+                getSupportActionBar().setTitle(extras.getString(REST_NAME_TAG));
+                curLatLng = new LatLng(extras.getDouble(REST_LAT_TAG), extras.getDouble(REST_LNG_TAG));
+            }
 
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(arguments);
+
+            SupportMapFragment mapFragment =
+                    (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.restaurant_detail_container, fragment)
@@ -55,5 +79,13 @@ public class DetailActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        if (curLatLng != null) mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLatLng, 15.5f));
+        mMap.addMarker(new MarkerOptions().position(curLatLng));
+        Log.d("map check", "map");
     }
 }

@@ -7,30 +7,26 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="200dp"
         android:id="@+id/detail_rest_img"
         android:alpha=".25"/>
 
-    <TextView  android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/detail_rest_name"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:textSize="@dimen/abc_text_size_title_material"
-        android:layout_alignBottom="@id/detail_rest_img"
-        />
+
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/detail_rest_img"
+        android:layout_alignBottom="@id/detail_rest_img"
+        android:id="@+id/detail_linear"
         android:gravity="center_vertical|center_horizontal">
 
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Call"
+            android:layout_marginRight="@dimen/button_margin"
+            android:layout_marginLeft="@dimen/button_margin"
             android:id="@+id/detail_call_rest"
             android:layout_weight="1"
             bootstrapbutton:bb_type="danger"
@@ -41,6 +37,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Map"
+            android:layout_marginRight="@dimen/button_margin"
+            android:layout_marginLeft="@dimen/button_margin"
             android:id="@+id/detail_show_map"
             android:layout_weight="1"
             bootstrapbutton:bb_type="danger"
@@ -51,11 +49,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Yelp"
+            android:layout_marginRight="@dimen/button_margin"
+            android:layout_marginLeft="@dimen/button_margin"
             android:id="@+id/detail_show_yelp"
             android:layout_weight="1"
             bootstrapbutton:bb_type="danger"
             bootstrapbutton:bb_roundedCorners="true"
             />
     </LinearLayout>
+
+    <TextView  android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/detail_rest_name"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="40sp"
+        android:layout_above="@id/detail_linear"
+        android:layout_marginBottom="@dimen/button_margin"
+        />
 
 </RelativeLayout>

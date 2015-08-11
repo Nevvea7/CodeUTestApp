@@ -5,7 +5,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +22,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import app.nevvea.nomnom.data.DataContract;
+import app.nevvea.nomnom.data.SearchResult;
+
 
 public class MainActivity extends ActionBarActivity
         implements GoogleApiClient.ConnectionCallbacks,
@@ -32,6 +34,10 @@ public class MainActivity extends ActionBarActivity
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback,
         MainActivityFragment.Callback {
+
+    private static final String LAT_TAG = "LAT_TAG";
+    private static final String LNG_TAG = "LNG_TAG";
+    private static final String LAST_RES = "LAST_RES";
 
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
@@ -103,14 +109,12 @@ public class MainActivity extends ActionBarActivity
     public void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
-        Log.d("activity check", "on resume called");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mGoogleApiClient.disconnect();
-        Log.d("activity check", "on pause called");
     }
 
 
@@ -169,7 +173,6 @@ public class MainActivity extends ActionBarActivity
         // TODO: check if map is null
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 15.5f));
 
-
     }
 
     /**
@@ -195,16 +198,35 @@ public class MainActivity extends ActionBarActivity
         return false;
             }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putDouble(LAT_TAG, curLatitude);
+        outState.putDouble(LNG_TAG, curLongitude);
+
+        super.onSaveInstanceState(outState);
+    }
+
     /**
      * Callback from MainActivityFragment to start other Activities
      * @param mUri uri with a restaurant's id. Passed to DetailActivity so that DetailActivity
      *             can query the database with the url
      */
     @Override
-    public void onItemSelected(Uri mUri, String name) {
+    public void onItemSelected(Uri mUri, SearchResult searchResult) {
+        Bundle bundle = new Bundle();
+        bundle.putDouble(DetailActivity.REST_LAT_TAG, searchResult.getLatLng().latitude);
+        bundle.putDouble(DetailActivity.REST_LNG_TAG, searchResult.getLatLng().longitude);
+        bundle.putString(DetailActivity.REST_NAME_TAG, searchResult.getRestName());
         Intent intent = new Intent(this, DetailActivity.class)
                 .setData(mUri)
-                .putExtra(DetailActivity.REST_NAME_TAG, name);
+                .putExtra(DetailActivity.DETAIL_BUNDLE_TAG, bundle);
+
         startActivity(intent);
     }
 

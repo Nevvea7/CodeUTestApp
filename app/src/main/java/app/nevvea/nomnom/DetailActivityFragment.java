@@ -47,9 +47,6 @@ public class DetailActivityFragment extends Fragment
     static final int COL_PHONE = 5;
 
     TextView restNameTextView;
-    TextView restPhoneTextView;
-    TextView restUrlTextView;
-    TextView restAddrTextView;
     ImageView resImgView;
     BootstrapButton callButton;
     BootstrapButton mapButton;
@@ -70,9 +67,6 @@ public class DetailActivityFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         restNameTextView = (TextView) rootView.findViewById(R.id.detail_rest_name);
         resImgView = (ImageView) rootView.findViewById(R.id.detail_rest_img);
-        restPhoneTextView = (TextView) rootView.findViewById(R.id.detail_rest_phone);
-        restAddrTextView = (TextView) rootView.findViewById(R.id.detail_rest_addr);
-        restUrlTextView = (TextView) rootView.findViewById(R.id.detail_rest_url);
         callButton = (BootstrapButton) rootView.findViewById(R.id.detail_call_rest);
         mapButton = (BootstrapButton) rootView.findViewById(R.id.detail_show_map);
         yelpButton = (BootstrapButton) rootView.findViewById(R.id.detail_show_yelp);
@@ -88,7 +82,6 @@ public class DetailActivityFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d("detail check 3", "on create loader called");
         if ( null != mUri ) {
             Log.d("detail check 5", mUri.toString());
             // Now create and return a CursorLoader that will take care of
@@ -113,7 +106,7 @@ public class DetailActivityFragment extends Fragment
             restNameTextView.setText(restName);
 
             final String restPhone = data.getString(COL_PHONE);
-            restPhoneTextView.setText(restPhone);
+
             if (!restPhone.equals("")) {
                 callButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -135,7 +128,6 @@ public class DetailActivityFragment extends Fragment
             }
 
             final String restUrl = data.getString(COL_MOBILE_URL);
-            restUrlTextView.setText(restUrl);
             yelpButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -146,7 +138,6 @@ public class DetailActivityFragment extends Fragment
             });
 
             final String restAddr = data.getString(COL_ADDR);
-            restAddrTextView.setText(restAddr);
             if (!restAddr.equals("")) {
                 mapButton.setOnClickListener(new View.OnClickListener() {
                     @Override

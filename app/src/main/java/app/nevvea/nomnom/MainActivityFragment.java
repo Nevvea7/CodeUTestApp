@@ -13,7 +13,10 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import app.nevvea.nomnom.data.DataContract;
@@ -66,7 +69,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
                     ((Callback) getActivity())
                             .onItemSelected(DataContract.DetailEntry.buildDetailWithId(
                                     mSearchResult.getRestID()
-                            ), mSearchResult.getRestName());
+                            ), mSearchResult);
                 }
             }
         });
@@ -138,6 +141,10 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             if (result.getLatLng() != null) {
                 mMap.addMarker(new MarkerOptions()
                     .position(result.getLatLng()));
+                LatLngBounds.Builder llBuilder = LatLngBounds.builder();
+                llBuilder.include(mMap.getCameraPosition().target);
+                llBuilder.include(result.getLatLng());
+                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llBuilder.build(), 50));
             }
         }
     }
@@ -151,7 +158,8 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri mUri, String name);
+        public void onItemSelected(Uri mUri, SearchResult searchResult);
+
 
     }
 }

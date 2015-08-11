@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:text="Click 'Nom Nom' to pick a restaurant!"
         android:textColor="@color/black"
+        android:textSize="17sp"
         android:id="@+id/instruction_text"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
