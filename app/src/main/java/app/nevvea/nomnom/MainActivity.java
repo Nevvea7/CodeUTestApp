@@ -201,9 +201,10 @@ public class MainActivity extends ActionBarActivity
      *             can query the database with the url
      */
     @Override
-    public void onItemSelected(Uri mUri) {
+    public void onItemSelected(Uri mUri, String name) {
         Intent intent = new Intent(this, DetailActivity.class)
-                .setData(mUri);
+                .setData(mUri)
+                .putExtra(DetailActivity.REST_NAME_TAG, name);
         startActivity(intent);
     }
 

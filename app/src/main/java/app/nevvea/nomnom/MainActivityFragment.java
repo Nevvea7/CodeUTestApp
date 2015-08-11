@@ -66,7 +66,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
                     ((Callback) getActivity())
                             .onItemSelected(DataContract.DetailEntry.buildDetailWithId(
                                     mSearchResult.getRestID()
-                            ));
+                            ), mSearchResult.getRestName());
                 }
             }
         });
@@ -151,7 +151,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri mUri);
+        public void onItemSelected(Uri mUri, String name);
 
     }
 }

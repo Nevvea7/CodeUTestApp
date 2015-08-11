@@ -1,5 +1,6 @@
 package app.nevvea.nomnom;
 
+import android.content.Intent;
 import android.support.v4.app.LoaderManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -11,7 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.squareup.picasso.Picasso;
 
 import app.nevvea.nomnom.data.DataContract.DetailEntry;
 
@@ -21,6 +26,7 @@ import app.nevvea.nomnom.data.DataContract.DetailEntry;
 public class DetailActivityFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>{
     static final String DETAIL_URI = "DETAIL_URI";
+
     private Uri mUri;
     private static final int DETAIL_LOADER = 0;
 
@@ -41,10 +47,13 @@ public class DetailActivityFragment extends Fragment
     static final int COL_PHONE = 5;
 
     TextView restNameTextView;
-    TextView restImgTextView;
     TextView restPhoneTextView;
     TextView restUrlTextView;
     TextView restAddrTextView;
+    ImageView resImgView;
+    BootstrapButton callButton;
+    BootstrapButton mapButton;
+    BootstrapButton yelpButton;
 
     public DetailActivityFragment() {
     }
@@ -57,13 +66,16 @@ public class DetailActivityFragment extends Fragment
             mUri = arguments.getParcelable(DetailActivityFragment.DETAIL_URI);
             Log.d("detail check 1", mUri.toString());
         }
+
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         restNameTextView = (TextView) rootView.findViewById(R.id.detail_rest_name);
-        restImgTextView = (TextView) rootView.findViewById(R.id.detail_rest_img);
+        resImgView = (ImageView) rootView.findViewById(R.id.detail_rest_img);
         restPhoneTextView = (TextView) rootView.findViewById(R.id.detail_rest_phone);
         restAddrTextView = (TextView) rootView.findViewById(R.id.detail_rest_addr);
         restUrlTextView = (TextView) rootView.findViewById(R.id.detail_rest_url);
-
+        callButton = (BootstrapButton) rootView.findViewById(R.id.detail_call_rest);
+        mapButton = (BootstrapButton) rootView.findViewById(R.id.detail_show_map);
+        yelpButton = (BootstrapButton) rootView.findViewById(R.id.detail_show_yelp);
         return rootView;
     }
 
@@ -100,17 +112,53 @@ public class DetailActivityFragment extends Fragment
             String restName = data.getString(COL_REST_NAME);
             restNameTextView.setText(restName);
 
-            String restPhone = data.getString(COL_PHONE);
+            final String restPhone = data.getString(COL_PHONE);
             restPhoneTextView.setText(restPhone);
+            if (!restPhone.equals("")) {
+                callButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent callIntent = new Intent(Intent.ACTION_CALL);
+                        callIntent.setData(Uri.parse("tel:" + restPhone));
+                        startActivity(callIntent);
+                    }
+                });
+            } else callButton.setBootstrapButtonEnabled(false);
 
             String restImg = data.getString(COL_IMG_URL);
-            restImgTextView.setText(restImg);
+            if (!restImg.equals("")){
+                Picasso.with(getActivity())
+                        .load(restImg)
+                        .fit()
+                        .centerCrop()
+                        .into(resImgView);
+            }
 
-            String restUrl = data.getString(COL_MOBILE_URL);
+            final String restUrl = data.getString(COL_MOBILE_URL);
             restUrlTextView.setText(restUrl);
+            yelpButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Uri webpage = Uri.parse(restUrl);
+                    Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+                    startActivity(webIntent);
+                }
+            });
 
-            String restAddr = data.getString(COL_ADDR);
+            final String restAddr = data.getString(COL_ADDR);
             restAddrTextView.setText(restAddr);
+            if (!restAddr.equals("")) {
+                mapButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        Uri geoLocation = Uri.parse("geo:0,0?q=" + Utility.getAddressQuery(restAddr));
+                        intent.setData(geoLocation);
+                        startActivity(intent);
+                    }
+                });
+            } else mapButton.setBootstrapButtonEnabled(false);
+
         }
     }
 

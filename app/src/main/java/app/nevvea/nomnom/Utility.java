@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Random;
 import java.util.Vector;
 
@@ -200,5 +202,12 @@ public class Utility {
         return locationSb.toString();
     }
 
+    static String getAddressQuery(String address) {
+        try {
+            return URLEncoder.encode(address, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+    }
 
 }

@@ -11,6 +11,8 @@ import app.nevvea.nomnom.R;
 
 public class DetailActivity extends ActionBarActivity {
 
+    static final String REST_NAME_TAG = "REST_NAME_TAG";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,6 +21,8 @@ public class DetailActivity extends ActionBarActivity {
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailActivityFragment.DETAIL_URI, getIntent().getData());
+
+            getSupportActionBar().setTitle(getIntent().getStringExtra(REST_NAME_TAG));
 
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(arguments);

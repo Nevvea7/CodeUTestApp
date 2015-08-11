@@ -6,24 +6,6 @@
     android:background="@color/white"
     >
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:minHeight="@dimen/abc_action_bar_default_height_material"
-        android:gravity="center_vertical|center_horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Black List"
-            android:textSize="@dimen/abc_text_size_title_material"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:id="@+id/textView" />
-    </LinearLayout>
-
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
