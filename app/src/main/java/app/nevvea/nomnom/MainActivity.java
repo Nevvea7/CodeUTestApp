@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -20,6 +21,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -78,24 +80,24 @@ public class MainActivity extends ActionBarActivity
 
         if (findViewById(R.id.main_activity_container) != null) {
             tabletLayout = true;
-            if (savedInstanceState != null) {
-                MapFragment mMapFragment = MapFragment.newInstance();
-                FragmentTransaction fragmentTransaction =
-                        getFragmentManager().beginTransaction();
-                fragmentTransaction.add(R.id.main_activity_container, mMapFragment);
-                fragmentTransaction.commit();
-            }
+            mFragment = new MainActivityFragment();
+            mFragment.setmGoogleApiClient(mGoogleApiClient);
+            Log.d("fragment check", "here");
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_activity_container, mFragment)
+                    .commit();
+            Log.d("fragment check", "there");
         }
         else {
             tabletLayout = false;
-            SupportMapFragment mapFragment =
-                    (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
-
             // pass the GoogleApiClient to MainActivityFragment
             mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
             mFragment.setmGoogleApiClient(mGoogleApiClient);
         }
+
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
 //        getResultButton = (BootstrapButton) findViewById(R.id.get_location_button);
 //        getResultButton.setOnClickListener(new View.OnClickListener() {
@@ -193,7 +195,9 @@ public class MainActivity extends ActionBarActivity
         curLongitude = mLocation.getLongitude();
         curLatitude = mLocation.getLatitude();
 
-        // TODO: check if map is null
+        MapsInitializer.initialize(this);
+
+        if (mMap == null) return;
         if (prevLatLng == null)
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 15.5f));
 

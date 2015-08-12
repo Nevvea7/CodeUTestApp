@@ -50,7 +50,6 @@ public class DetailActivity extends ActionBarActivity
             mapFragment.getMapAsync(this);
 
 
-
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.restaurant_detail_container, fragment)
                     .commit();

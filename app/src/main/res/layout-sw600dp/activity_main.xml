@@ -12,14 +12,8 @@
         android:layout_height="match_parent"
         android:background="#ff4fb345"
         android:weightSum="1"
-        android:layout_weight="0.16"
-        android:id="@+id/tab">
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.12" />
+        android:id="@+id/tab"
+        android:layout_weight="2">
 
         <LinearLayout
             android:orientation="vertical"
@@ -49,12 +43,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.12" />
-
         <Button
             android:layout_width="match_parent"
             android:layout_height="86dp"
@@ -79,7 +67,7 @@
             android:letterSpacing="1.2" />
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="79dp"
             android:text="BLACKLIST"
             android:id="@+id/button3"
@@ -90,9 +78,17 @@
             android:capitalize="characters" />
 
     </LinearLayout>
+    <fragment
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_weight="7" />
     <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="200dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:id="@+id/main_activity_container"
-        tools:ignore="MergeRootFrame" />
+        tools:ignore="MergeRootFrame"
+        android:layout_weight="3" />
 </LinearLayout>
