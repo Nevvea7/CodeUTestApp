@@ -157,6 +157,7 @@ public class Utility {
         }
     }
 
+
     /**
      * Get LatLng from a JSONObject
      * @param coordinates
@@ -209,5 +210,7 @@ public class Utility {
             return null;
         }
     }
+
+
 
 }

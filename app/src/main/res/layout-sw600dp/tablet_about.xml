@@ -1,0 +1,125 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:baselineAligned="false"
+    android:theme="@style/AppTheme"
+    android:divider="?android:attr/dividerHorizontal" android:orientation="horizontal"
+    android:showDividers="middle"
+    android:id="@+id/tablet">
+
+    <!--
+    This layout is a two-pane layout for the Items
+    master/detail flow.
+    See res/values-large/refs.xml and
+    res/values-sw600dp/refs.xml for an example of layout aliases
+    that replace the single-pane version of the layout with
+    this two-pane version.
+
+    For more on layout aliases, see:
+    http://developer.android.com/training/multiscreen/screensizes.html#TaskUseAliasFilters
+    -->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="#ff4fb345"
+        android:weightSum="1"
+        android:layout_weight="0.16"
+        android:id="@+id/tab">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.12" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="148dp"
+            android:background="#ff4fb345">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_gravity="right" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="147dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/linear2"
+                android:background="#ff4fb345"
+                android:textAlignment="center">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:id="@+id/imageView2"
+                    android:src="@drawable/cookie_logo_bubble" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.12" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="86dp"
+            android:text="HOME"
+            android:id="@+id/button"
+            android:background="#ff4fb345"
+            android:textColor="#ffffffff"
+            android:textStyle="bold"
+            android:capitalize="characters"
+            android:letterSpacing="1.2" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:text="ABOUT"
+            android:id="@+id/button2"
+            android:layout_gravity="center_horizontal"
+            android:background="#ff4fb345"
+            android:textColor="#ffffffff"
+            android:textStyle="bold"
+            android:capitalize="characters"
+            android:letterSpacing="1.2" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="79dp"
+            android:text="BLACKLIST"
+            android:id="@+id/button3"
+            android:background="#ff4fb345"
+            android:textColor="#ffffffff"
+            android:textStyle="bold"
+            android:letterSpacing="1.2"
+            android:capitalize="characters" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.74"
+        android:background="#FFFA00">
+
+        <TextView
+            android:layout_width="599dp"
+            android:layout_height="fill_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="NomNom was built from a  quest to quench hunger and  discover new food, without the  hassle of decision and research.  We here at NomNom believe that eating should be an enjoyable experience.    Discover.Eat.Enjoy."
+            android:id="@+id/textView"
+            android:layout_gravity="center"
+            android:background="#ff9200"
+            android:textColor="#ffffff"
+            android:padding="30dp" />
+    </FrameLayout>
+
+</LinearLayout>

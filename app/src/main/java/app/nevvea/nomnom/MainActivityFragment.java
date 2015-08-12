@@ -31,6 +31,11 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
 
+    private static final String HAS_REST_TAG = "HAS_REST_TAG";
+    private static final String REST_NAME_TAG = "REST_NAME_TAG";
+    private static final String REST_ID_TAG = "REST_ID_TAG";
+    private static final String REST_LAT = "REST_LAT";
+    private static final String REST_LNG = "REST_LNG";
 
     TextView yelpResultTextView;
     TextView instructionTextView;
@@ -107,7 +112,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         fetchRestaurantsTask.execute(lat, longt);
 
         if (!hasRestaurant) {
-            hasRestaurant = true;
             instructionTextView.setVisibility(View.GONE);
             linearContainer.setVisibility(View.VISIBLE);
             addToBlacklistButton.setVisibility(View.VISIBLE);
@@ -127,15 +131,53 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         curLongitude = lng;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(HAS_REST_TAG, hasRestaurant);
+        if (hasRestaurant) {
+            outState.putString(REST_ID_TAG, mSearchResult.getRestID());
+            outState.putString(REST_NAME_TAG, mSearchResult.getRestName());
+            outState.putDouble(REST_LAT, mSearchResult.getLatLng().latitude);
+            outState.putDouble(REST_LNG, mSearchResult.getLatLng().longitude);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            super.onViewStateRestored(savedInstanceState);
+            return;
+        }
+        hasRestaurant = savedInstanceState.getBoolean(HAS_REST_TAG);
+        if (hasRestaurant) {
+            mSearchResult = new SearchResult(savedInstanceState.getString(REST_NAME_TAG),
+                    new LatLng(savedInstanceState.getDouble(REST_LAT), savedInstanceState.getDouble(REST_LNG)),
+                    savedInstanceState.getString(REST_ID_TAG));
+            instructionTextView.setVisibility(View.GONE);
+            linearContainer.setVisibility(View.VISIBLE);
+            addToBlacklistButton.setVisibility(View.VISIBLE);
+            yelpResultTextView.setText(mSearchResult.getRestName());
+            showDetailButton.setVisibility(View.VISIBLE);
+            if (mSearchResult.getLatLng() != null) {
+                ((Callback) getActivity()).showMarkerOnMap(mSearchResult.getLatLng());
+            }
+        }
+
+        super.onViewStateRestored(savedInstanceState);
+    }
+
     // called by FetchRestaurantsTask in PostExecute
     @Override
     public void onTaskFinished(SearchResult result) {
         mSearchResult = result;
         if (result == null) {
+            hasRestaurant = false;
             yelpResultTextView.setText("There's no restaurant around this point. Try somewhere else!");
             showDetailButton.setVisibility(View.GONE);
         }
         else {
+            hasRestaurant = true;
             yelpResultTextView.setText(result.getRestName());
             showDetailButton.setVisibility(View.VISIBLE);
             if (result.getLatLng() != null) {
@@ -158,8 +200,9 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri mUri, SearchResult searchResult);
+        void onItemSelected(Uri mUri, SearchResult searchResult);
 
+        void showMarkerOnMap(LatLng latLng);
 
     }
 }

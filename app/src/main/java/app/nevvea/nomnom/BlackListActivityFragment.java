@@ -1,9 +1,8 @@
 package app.nevvea.nomnom;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
+import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,47 +11,41 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import app.nevvea.nomnom.data.DataContract;
 
-public class BlackListActivity extends ListActivity
-        implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    private Context mContext;
-
-    private BlackListAdapter mBlackListAdapter;
-
-    private int HISTORY_LOADER = 0;
-
+public class BlackListActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    ListView myListView;
+    TextView myTextView;
     private static final String[] HISTORY_COLUMNS = {
             DataContract.HistoryEntry._ID,
             DataContract.HistoryEntry.COLUMN_RESTAURANT_ID,
             DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME
     };
 
-    static final int COL_ID = 0;
-    static final int COL_REST_ID = 1;
-    static final int COL_REST_NAME = 2;
+    private BlackListAdapter mBlackListAdapter;
+    private int HISTORY_LOADER = 0;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_black_list);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_blacklist, container, false);
+        myListView = (ListView) rootView.findViewById(R.id.blacklist_list);
+        myTextView = (TextView) rootView.findViewById(R.id.blacklist_empty);
 
         getLoaderManager().initLoader(HISTORY_LOADER, null, this);
 
-        mContext = this;
+        mBlackListAdapter = new BlackListAdapter(getActivity(), null);
+        myListView.setAdapter(mBlackListAdapter);
+        myListView.setEmptyView(myTextView);
 
-        mBlackListAdapter = new BlackListAdapter(this, null);
-        setListAdapter(mBlackListAdapter);
-
-        ListView mListView = getListView();
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        myListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Cursor c = (Cursor) adapterView.getItemAtPosition(position);
@@ -61,13 +54,13 @@ public class BlackListActivity extends ListActivity
                     Log.d("click check", "cursor not null");
                     final String restID = c.getString(BlackListActivity.COL_REST_ID);
                     //pop up alert
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
                     alertDialogBuilder
                             .setMessage("Do you want to remove this place from the black list?")
                             .setPositiveButton("Yeah, I'll give it a chance.", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    mContext.getContentResolver().delete(DataContract.HistoryEntry.CONTENT_URI
+                                    getActivity().getContentResolver().delete(DataContract.HistoryEntry.CONTENT_URI
                                             , "rest_id = ?", new String[]{restID});
                                 }
                             });
@@ -81,51 +74,17 @@ public class BlackListActivity extends ListActivity
                 return true;
             }
         });
+
+        return rootView;
+
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        Cursor c = (Cursor) l.getItemAtPosition(position);
-        if (c != null) {
-            Log.d("click check", "cursor not null");
-            final String restID = c.getString(BlackListActivity.COL_REST_ID);
-            Uri mUri = DataContract.DetailEntry.buildDetailWithId(restID);
-            // link to detail activity
-            Intent intent = new Intent(this, DetailActivity.class)
-                    .setData(mUri);
-            startActivity(intent);
-        }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_black_list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String sortOrder = DataContract.HistoryEntry._ID + " ASC";
         Uri historyUri = DataContract.HistoryEntry.CONTENT_URI;
 
-        Cursor test = this.getContentResolver().query(
+        Cursor test = getActivity().getContentResolver().query(
                 DataContract.HistoryEntry.CONTENT_URI,
                 null,
                 null,
@@ -138,7 +97,7 @@ public class BlackListActivity extends ListActivity
             Log.d("cursor check", test.getString(0));
         }
 
-        return new CursorLoader(this,
+        return new CursorLoader(getActivity(),
                 historyUri,
                 HISTORY_COLUMNS,
                 null,
@@ -151,9 +110,10 @@ public class BlackListActivity extends ListActivity
         mBlackListAdapter.swapCursor(cursor);
     }
 
-
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mBlackListAdapter.swapCursor(null);
     }
+
+
 }

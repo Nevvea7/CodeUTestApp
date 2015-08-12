@@ -1,10 +1,12 @@
 package app.nevvea.nomnom;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,10 +19,13 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import app.nevvea.nomnom.data.DataContract;
 import app.nevvea.nomnom.data.SearchResult;
@@ -38,11 +43,16 @@ public class MainActivity extends ActionBarActivity
     private static final String LAT_TAG = "LAT_TAG";
     private static final String LNG_TAG = "LNG_TAG";
     private static final String LAST_RES = "LAST_RES";
+    private static final String MAP_TAG = "MAP_TAG";
 
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
     double curLongitude;
     double curLatitude;
+    Boolean tabletLayout;
+
+    LatLng prevLatLng;
+    LatLng prevMarkerLatLng;
 
     BootstrapButton getResultButton;
 
@@ -57,6 +67,7 @@ public class MainActivity extends ActionBarActivity
             .setInterval(5000)         // 5 seconds
             .setFastestInterval(16)    // 16ms = 60fps
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    private LatLng latLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,31 +76,44 @@ public class MainActivity extends ActionBarActivity
 
         buildGoogleApiClient();
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        // pass the GoogleApiClient to MainActivityFragment
-        mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
-        mFragment.setmGoogleApiClient(mGoogleApiClient);
-
-        getResultButton = (BootstrapButton) findViewById(R.id.get_location_button);
-        getResultButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mGoogleApiClient.isConnected()) {
-
-                    curLatitude = mMap.getCameraPosition().target.latitude;
-                    curLongitude = mMap.getCameraPosition().target.longitude;
-
-                    mFragment.setLatLng(curLatitude, curLongitude);
-                    mFragment.onLocationChaged(curLatitude, curLongitude);
-
-                } else {
-                    //TODO say that internet is not connected
-                }
+        if (findViewById(R.id.main_activity_container) != null) {
+            tabletLayout = true;
+            if (savedInstanceState != null) {
+                MapFragment mMapFragment = MapFragment.newInstance();
+                FragmentTransaction fragmentTransaction =
+                        getFragmentManager().beginTransaction();
+                fragmentTransaction.add(R.id.main_activity_container, mMapFragment);
+                fragmentTransaction.commit();
             }
-        });
+        }
+        else {
+            tabletLayout = false;
+            SupportMapFragment mapFragment =
+                    (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+            // pass the GoogleApiClient to MainActivityFragment
+            mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
+            mFragment.setmGoogleApiClient(mGoogleApiClient);
+        }
+
+//        getResultButton = (BootstrapButton) findViewById(R.id.get_location_button);
+//        getResultButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (mGoogleApiClient.isConnected()) {
+//
+//                    curLatitude = mMap.getCameraPosition().target.latitude;
+//                    curLongitude = mMap.getCameraPosition().target.longitude;
+//
+//                    mFragment.setLatLng(curLatitude, curLongitude);
+//                    mFragment.onLocationChaged(curLatitude, curLongitude);
+//
+//                } else {
+//                    //TODO say that internet is not connected
+//                }
+//            }
+//        });
 
     }
 
@@ -125,11 +149,10 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(this);
         mFragment.setmMap(googleMap);
-
+        Log.d("map check", "mapready");
     }
 
     /**
@@ -171,7 +194,30 @@ public class MainActivity extends ActionBarActivity
         curLatitude = mLocation.getLatitude();
 
         // TODO: check if map is null
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 15.5f));
+        if (prevLatLng == null)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 15.5f));
+
+        else {
+            CameraPosition movePos =
+                    new CameraPosition.Builder().target(prevLatLng)
+                            .zoom(15.5f)
+                            .bearing(0)
+                            .tilt(25)
+                            .build();
+
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(movePos));
+
+            if (prevMarkerLatLng != null) {
+                mMap.clear();
+                mMap.addMarker(new MarkerOptions()
+                        .position(prevMarkerLatLng));
+                LatLngBounds.Builder llBuilder = LatLngBounds.builder();
+                llBuilder.include(prevMarkerLatLng);
+                llBuilder.include(prevLatLng);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(llBuilder.build(), 50));
+            }
+
+        }
 
     }
 
@@ -200,14 +246,20 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        LatLng prevCameraPos = new LatLng(savedInstanceState.getDouble(LAT_TAG),
+                savedInstanceState.getDouble(LNG_TAG));
+        prevLatLng = prevCameraPos;
 
         super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putDouble(LAT_TAG, curLatitude);
-        outState.putDouble(LNG_TAG, curLongitude);
+        double lat = mMap.getCameraPosition().target.latitude;
+        double lng = mMap.getCameraPosition().target.longitude;
+
+        outState.putDouble(LAT_TAG, lat);
+        outState.putDouble(LNG_TAG, lng);
 
         super.onSaveInstanceState(outState);
     }
@@ -228,6 +280,11 @@ public class MainActivity extends ActionBarActivity
                 .putExtra(DetailActivity.DETAIL_BUNDLE_TAG, bundle);
 
         startActivity(intent);
+    }
+
+    @Override
+    public void showMarkerOnMap(LatLng latLng) {
+        prevMarkerLatLng = latLng;
     }
 
     @Override
