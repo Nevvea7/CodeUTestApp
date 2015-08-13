@@ -135,6 +135,12 @@
         <fragment
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:name="app.nevvea.nomnom.AboutActivityFragment"
+            android:id="@+id/about_fragment" />
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:name="app.nevvea.nomnom.BlackListActivityFragment"
             android:id="@+id/blacklist_fragment" />
     </LinearLayout>

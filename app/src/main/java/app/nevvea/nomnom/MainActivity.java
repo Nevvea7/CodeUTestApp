@@ -50,8 +50,8 @@ public class MainActivity extends ActionBarActivity
     private static final String MAP_TAG = "MAP_TAG";
 
     private static final int MAIN = 0;
-    //private static final int ABOUT = 1;
-    private static final int BLACKLIST = 1;
+    private static final int ABOUT = 1;
+    private static final int BLACKLIST = 2;
     private static final int FRAGMENT_COUNT = BLACKLIST +1;
 
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
@@ -98,15 +98,17 @@ public class MainActivity extends ActionBarActivity
 
         mapContainer = (RelativeLayout) findViewById(R.id.main_map_container);
 
+        // if it's a tablet, setup the layout accordingly
         if (findViewById(R.id.main_activity_container) != null) {
             tabletLayout = true;
 
             MainActivityFragment mf = (MainActivityFragment) fm.findFragmentById(R.id.main_fragment);
             BlackListActivityFragment bf = (BlackListActivityFragment) fm.findFragmentById(R.id.blacklist_fragment);
+            AboutActivityFragment af = (AboutActivityFragment) fm.findFragmentById(R.id.about_fragment);
 
             mFragment = mf;
             fragments[MAIN] = mf;
-            //fragments[ABOUT] = bf;
+            fragments[ABOUT] = af;
             fragments[BLACKLIST] = bf;
 
             showFragment(MAIN, false);
@@ -123,6 +125,17 @@ public class MainActivity extends ActionBarActivity
                     mapContainer.setVisibility(View.VISIBLE);
                     fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
                             0, LinearLayout.LayoutParams.MATCH_PARENT, 3
+                    ));
+                }
+            });
+
+            tabletAboutButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showFragment(ABOUT, false);
+                    mapContainer.setVisibility(View.GONE);
+                    fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
+                            0, LinearLayout.LayoutParams.MATCH_PARENT, 10
                     ));
                 }
             });
@@ -158,8 +171,6 @@ public class MainActivity extends ActionBarActivity
                     mFragment.setLatLng(curLatitude, curLongitude);
                     mFragment.onLocationChaged(curLatitude, curLongitude);
 
-                } else {
-                    //TODO say that internet is not connected
                 }
             }
         });
@@ -204,7 +215,6 @@ public class MainActivity extends ActionBarActivity
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(this);
         mFragment.setmMap(googleMap);
-        Log.d("map check", "mapready");
     }
 
     /**
@@ -247,7 +257,6 @@ public class MainActivity extends ActionBarActivity
 
         MapsInitializer.initialize(this);
 
-        Log.d("map check", "connected");
         //if (mMap == null) return;
         if (prevLatLng == null)
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 15.5f));

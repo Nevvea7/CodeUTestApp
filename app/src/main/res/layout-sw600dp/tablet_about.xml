@@ -114,7 +114,6 @@
             android:layout_width="599dp"
             android:layout_height="fill_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="NomNom was built from a  quest to quench hunger and  discover new food, without the  hassle of decision and research.  We here at NomNom believe that eating should be an enjoyable experience.    Discover.Eat.Enjoy."
             android:id="@+id/textView"
             android:layout_gravity="center"
             android:background="#ff9200"

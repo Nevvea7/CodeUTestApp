@@ -1,0 +1,13 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context="app.nevvea.nomnom.AboutActivityFragment">
+
+    <TextView android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="NomNom was built from a  quest to quench hunger and  discover new food, without the  hassle of decision and research.  We here at NomNom believe that eating should be an enjoyable experience. \n   Discover.Eat.Enjoy."
+        android:gravity="center" />
+
+</LinearLayout>
