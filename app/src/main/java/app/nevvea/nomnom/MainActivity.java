@@ -1,26 +1,29 @@
 package app.nevvea.nomnom;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -29,7 +32,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import app.nevvea.nomnom.data.DataContract;
 import app.nevvea.nomnom.data.SearchResult;
 
 
@@ -47,6 +49,13 @@ public class MainActivity extends ActionBarActivity
     private static final String LAST_RES = "LAST_RES";
     private static final String MAP_TAG = "MAP_TAG";
 
+    private static final int MAIN = 0;
+    //private static final int ABOUT = 1;
+    private static final int BLACKLIST = 1;
+    private static final int FRAGMENT_COUNT = BLACKLIST +1;
+
+    private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
+
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
     double curLongitude;
@@ -57,7 +66,11 @@ public class MainActivity extends ActionBarActivity
     LatLng prevMarkerLatLng;
 
     BootstrapButton getResultButton;
-
+    Button tabletHomeButton;
+    Button tabletAboutButton;
+    Button tabletBlacklistButton;
+    RelativeLayout mapContainer;
+    LinearLayout fragmentContainer;
 
     Location mLocation;
 
@@ -78,44 +91,78 @@ public class MainActivity extends ActionBarActivity
 
         buildGoogleApiClient();
 
+        FragmentManager fm = getSupportFragmentManager();
+        final SupportMapFragment mapFragment =
+                (SupportMapFragment) fm.findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        mapContainer = (RelativeLayout) findViewById(R.id.main_map_container);
+
         if (findViewById(R.id.main_activity_container) != null) {
             tabletLayout = true;
-            mFragment = new MainActivityFragment();
-            mFragment.setmGoogleApiClient(mGoogleApiClient);
-            Log.d("fragment check", "here");
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.main_activity_container, mFragment)
-                    .commit();
-            Log.d("fragment check", "there");
+
+            MainActivityFragment mf = (MainActivityFragment) fm.findFragmentById(R.id.main_fragment);
+            BlackListActivityFragment bf = (BlackListActivityFragment) fm.findFragmentById(R.id.blacklist_fragment);
+
+            mFragment = mf;
+            fragments[MAIN] = mf;
+            //fragments[ABOUT] = bf;
+            fragments[BLACKLIST] = bf;
+
+            showFragment(MAIN, false);
+
+            fragmentContainer = (LinearLayout)findViewById(R.id.main_activity_container);
+            tabletHomeButton = (Button) findViewById(R.id.tablet_home_button);
+            tabletAboutButton = (Button) findViewById(R.id.tablet_about_button);
+            tabletBlacklistButton = (Button) findViewById(R.id.tablet_blacklist_button);
+
+            tabletHomeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showFragment(MAIN, false);
+                    mapContainer.setVisibility(View.VISIBLE);
+                    fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
+                            0, LinearLayout.LayoutParams.MATCH_PARENT, 3
+                    ));
+                }
+            });
+
+            tabletBlacklistButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showFragment(BLACKLIST, false);
+                    mapContainer.setVisibility(View.GONE);
+                    fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
+                            0, LinearLayout.LayoutParams.MATCH_PARENT, 10
+                    ));
+                }
+            });
         }
         else {
             tabletLayout = false;
             // pass the GoogleApiClient to MainActivityFragment
             mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
-            mFragment.setmGoogleApiClient(mGoogleApiClient);
         }
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mFragment.setmGoogleApiClient(mGoogleApiClient);
 
-//        getResultButton = (BootstrapButton) findViewById(R.id.get_location_button);
-//        getResultButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (mGoogleApiClient.isConnected()) {
-//
-//                    curLatitude = mMap.getCameraPosition().target.latitude;
-//                    curLongitude = mMap.getCameraPosition().target.longitude;
-//
-//                    mFragment.setLatLng(curLatitude, curLongitude);
-//                    mFragment.onLocationChaged(curLatitude, curLongitude);
-//
-//                } else {
-//                    //TODO say that internet is not connected
-//                }
-//            }
-//        });
+        getResultButton = (BootstrapButton) findViewById(R.id.get_location_button);
+        getResultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mGoogleApiClient.isConnected()) {
+
+                    curLatitude = mMap.getCameraPosition().target.latitude;
+                    curLongitude = mMap.getCameraPosition().target.longitude;
+
+                    mFragment.setLatLng(curLatitude, curLongitude);
+                    mFragment.onLocationChaged(curLatitude, curLongitude);
+
+                } else {
+                    //TODO say that internet is not connected
+                }
+            }
+        });
 
     }
 
@@ -141,6 +188,9 @@ public class MainActivity extends ActionBarActivity
     public void onPause() {
         super.onPause();
         mGoogleApiClient.disconnect();
+        double lat = mMap.getCameraPosition().target.latitude;
+        double lng = mMap.getCameraPosition().target.longitude;
+        prevLatLng = new LatLng(lat, lng);
     }
 
 
@@ -197,7 +247,8 @@ public class MainActivity extends ActionBarActivity
 
         MapsInitializer.initialize(this);
 
-        if (mMap == null) return;
+        Log.d("map check", "connected");
+        //if (mMap == null) return;
         if (prevLatLng == null)
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 15.5f));
 
@@ -254,6 +305,8 @@ public class MainActivity extends ActionBarActivity
                 savedInstanceState.getDouble(LNG_TAG));
         prevLatLng = prevCameraPos;
 
+        Log.d("map check", prevLatLng.toString());
+
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -294,7 +347,8 @@ public class MainActivity extends ActionBarActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (!tabletLayout)
+            getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -317,5 +371,21 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showFragment(int fragmentIndex, boolean addToBackStack) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        for (int i = 0; i < fragments.length; i++) {
+            if (i == fragmentIndex) {
+                transaction.show(fragments[i]);
+            } else {
+                transaction.hide(fragments[i]);
+            }
+        }
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
+        transaction.commit();
     }
 }

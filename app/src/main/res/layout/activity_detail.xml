@@ -12,15 +12,6 @@
         android:id="@+id/restaurant_detail_container"
         tools:ignore="MergeRootFrame" />
 
-        <!--<fragment-->
-            <!--android:id="@+id/detail_activity_fragment"-->
-            <!--android:name="app.nevvea.nomnom.DetailActivityFragment"-->
-            <!--tools:layout="@layout/fragment_main"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="1dp"-->
-            <!--class="app.nevvea.nomnom.DetailActivityFragment" />-->
-    <!--</FrameLayout>-->
-
     <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/map"

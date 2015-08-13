@@ -1,25 +1,24 @@
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="#ff4fb345"
+        android:background="@color/theme_green"
         android:weightSum="1"
         android:id="@+id/tab"
-        android:layout_weight="2">
+        android:layout_weight="3">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="148dp"
-            android:background="#ff4fb345">
+            android:background="@color/theme_green">
 
             <Space
                 android:layout_width="match_parent"
@@ -32,7 +31,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/linear2"
-                android:background="#ff4fb345"
+                android:background="@color/theme_green"
                 android:textAlignment="center">
 
                 <ImageView
@@ -47,48 +46,97 @@
             android:layout_width="match_parent"
             android:layout_height="86dp"
             android:text="HOME"
-            android:id="@+id/button"
-            android:background="#ff4fb345"
-            android:textColor="#ffffffff"
-            android:textStyle="bold"
-            android:capitalize="characters"
-            android:letterSpacing="1.2" />
+            android:id="@+id/tablet_home_button"
+            android:background="@color/theme_green"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="84dp"
             android:text="ABOUT"
-            android:id="@+id/button2"
+            android:id="@+id/tablet_about_button"
             android:layout_gravity="center_horizontal"
-            android:background="#ff4fb345"
-            android:textColor="#ffffffff"
-            android:textStyle="bold"
-            android:capitalize="characters"
-            android:letterSpacing="1.2" />
+            android:background="@color/theme_green"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="79dp"
             android:text="BLACKLIST"
-            android:id="@+id/button3"
-            android:background="#ff4fb345"
-            android:textColor="#ffffffff"
-            android:textStyle="bold"
-            android:letterSpacing="1.2"
-            android:capitalize="characters" />
+            android:id="@+id/tablet_blacklist_button"
+            android:background="@color/theme_green"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
     </LinearLayout>
-    <fragment
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/map"
+
+    <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_weight="7" />
-    <FrameLayout
+        android:layout_height="wrap_content"
+        android:layout_weight="7"
+        android:id="@+id/main_map_container">
+
+        <fragment
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/map"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            class="com.google.android.gms.maps.SupportMapFragment" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center">
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nom Nom!"
+                bootstrapbutton:bb_size="xsmall"
+                android:id="@+id/get_location_button"
+                bootstrapbutton:bb_type="danger"
+                bootstrapbutton:bb_roundedCorners="true"
+                />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/pin"
+                android:id="@+id/map_marker" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <!--<FrameLayout-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!-- -->
+        <!--tools:ignore="MergeRootFrame"-->
+        <!--android:layout_weight="3" />-->
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_weight="3"
         android:id="@+id/main_activity_container"
-        tools:ignore="MergeRootFrame"
-        android:layout_weight="3" />
+        android:layout_height="match_parent">
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="app.nevvea.nomnom.MainActivityFragment"
+            android:id="@+id/main_fragment" />
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="app.nevvea.nomnom.BlackListActivityFragment"
+            android:id="@+id/blacklist_fragment" />
+    </LinearLayout>
+
 </LinearLayout>
