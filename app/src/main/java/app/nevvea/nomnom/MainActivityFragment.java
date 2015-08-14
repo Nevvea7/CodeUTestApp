@@ -96,7 +96,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
                     Uri uri = getActivity().getContentResolver().insert(DataContract.HistoryEntry.CONTENT_URI,
                             historyValues);
-                    Log.d("history check", uri.toString());
 
                     // call random function again since the user doesn't want this restaurant
                     onLocationChaged(curLatitude, curLongitude);
@@ -174,11 +173,13 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     @Override
     public void onTaskFinished(SearchResult result) {
         mSearchResult = result;
+        // if can't find any restaurants around then tell the user to try somewhere else
         if (result == null) {
             hasRestaurant = false;
-            yelpResultTextView.setText("There's no restaurant around this point. Try somewhere else!");
+            yelpResultTextView.setText(getActivity().getResources().getString(R.string.no_restaurant));
             showDetailButton.setVisibility(View.GONE);
         }
+        // if there is then show it on the map
         else {
             hasRestaurant = true;
             yelpResultTextView.setText(result.getRestName());

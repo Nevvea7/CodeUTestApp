@@ -51,9 +51,7 @@ public class BlackListActivityFragment extends Fragment implements LoaderManager
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Cursor c = (Cursor) adapterView.getItemAtPosition(position);
-                Log.d("click check", Integer.toString(position));
                 if (c != null) {
-                    Log.d("click check", "cursor not null");
                     final String restID = c.getString(BlackListActivity.COL_REST_ID);
                     //pop up alert
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());

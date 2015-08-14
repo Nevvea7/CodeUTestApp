@@ -257,7 +257,6 @@ public class MainActivity extends ActionBarActivity
 
         MapsInitializer.initialize(this);
 
-        //if (mMap == null) return;
         if (prevLatLng == null)
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(curLatitude, curLongitude), 15.5f));
 
@@ -313,8 +312,6 @@ public class MainActivity extends ActionBarActivity
         LatLng prevCameraPos = new LatLng(savedInstanceState.getDouble(LAT_TAG),
                 savedInstanceState.getDouble(LNG_TAG));
         prevLatLng = prevCameraPos;
-
-        Log.d("map check", prevLatLng.toString());
 
         super.onRestoreInstanceState(savedInstanceState);
     }

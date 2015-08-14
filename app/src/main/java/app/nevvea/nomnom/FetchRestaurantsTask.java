@@ -33,7 +33,8 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, SearchResult>{
     protected SearchResult doInBackground(Double... params) {
         // call yelp api
         Yelp yelp = Yelp.getYelp(mContext);
-        String businesses = yelp.search("restaurants", params[0], params[1]);
+        String businesses = yelp.search(mContext.getResources().getString(R.string.yelp_search_term),
+                params[0], params[1]);
         try {
             return Utility.processJson(businesses, mContext);
         } catch (JSONException e) {
