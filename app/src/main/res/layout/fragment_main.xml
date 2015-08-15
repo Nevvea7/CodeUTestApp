@@ -42,7 +42,6 @@
             android:id="@+id/goto_detail_button"
             bootstrapbutton:bb_type="danger"
             bootstrapbutton:bb_roundedCorners="true"
-            android:visibility="gone"
             />
     </LinearLayout>
 
