@@ -193,6 +193,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             hasRestaurant = true;
             yelpResultTextView.setText(result.getRestName());
             linearContainer.setVisibility(View.VISIBLE);
+            showDetailButton.setVisibility(View.VISIBLE);
             addToBlacklistButton.setVisibility(View.VISIBLE);
             if (result.getLatLng() != null) {
                 mMap.addMarker(new MarkerOptions()
