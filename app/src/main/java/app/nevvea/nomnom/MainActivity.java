@@ -1,5 +1,8 @@
 package app.nevvea.nomnom;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
@@ -32,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import app.nevvea.nomnom.data.DataContract;
 import app.nevvea.nomnom.data.SearchResult;
 
 
@@ -56,6 +60,7 @@ public class MainActivity extends ActionBarActivity
 
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
 
+    Context mContext;
     GoogleApiClient mGoogleApiClient;
     GoogleMap mMap;
     double curLongitude;
@@ -88,6 +93,8 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mContext = this;
 
         buildGoogleApiClient();
 
@@ -165,12 +172,49 @@ public class MainActivity extends ActionBarActivity
             public void onClick(View view) {
                 if (mGoogleApiClient.isConnected()) {
 
-                    curLatitude = mMap.getCameraPosition().target.latitude;
-                    curLongitude = mMap.getCameraPosition().target.longitude;
+                    if (Utility.isConnectedToInternet(mContext)){
+                        curLatitude = mMap.getCameraPosition().target.latitude;
+                        curLongitude = mMap.getCameraPosition().target.longitude;
 
-                    mFragment.setLatLng(curLatitude, curLongitude);
-                    mFragment.onLocationChaged(curLatitude, curLongitude);
+                        mFragment.setLatLng(curLatitude, curLongitude);
+                        mFragment.onLocationChaged(curLatitude, curLongitude);
+                    }
 
+                    else {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+                        alertDialogBuilder
+                                .setMessage("No internet connection! Please check your settings")
+                                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.cancel();
+                                    }
+                                });
+
+                        //create alert dialog
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+
+                        //show it
+                        alertDialog.show();
+                    }
+
+                }
+                else {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+                    alertDialogBuilder
+                            .setMessage("No internet connection! Please check your settings")
+                            .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+
+                    //create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    //show it
+                    alertDialog.show();
                 }
             }
         });
@@ -252,6 +296,25 @@ public class MainActivity extends ActionBarActivity
         this);  // LocationListener;
 
         mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        if (mLocation == null) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder
+                    .setMessage("Can't get your location! If you'd like to continue, please either turn on location sharing or drag the map to where you want to eat.")
+                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+
+            //create alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            //show it
+            alertDialog.show();
+            return;
+        }
         curLongitude = mLocation.getLongitude();
         curLatitude = mLocation.getLatitude();
 
