@@ -50,6 +50,7 @@ public class MainActivity extends ActionBarActivity
 
     private static final String LAT_TAG = "LAT_TAG";
     private static final String LNG_TAG = "LNG_TAG";
+    private static final String LAST_FRAG_TAG = "LAST_FRAG_TAG";
     private static final String LAST_RES = "LAST_RES";
     private static final String MAP_TAG = "MAP_TAG";
 
@@ -57,6 +58,7 @@ public class MainActivity extends ActionBarActivity
     private static final int ABOUT = 1;
     private static final int BLACKLIST = 2;
     private static final int FRAGMENT_COUNT = BLACKLIST +1;
+    private int lastFrag = -1;
 
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
 
@@ -118,21 +120,21 @@ public class MainActivity extends ActionBarActivity
             fragments[ABOUT] = af;
             fragments[BLACKLIST] = bf;
 
-            showFragment(MAIN, false);
 
             fragmentContainer = (LinearLayout)findViewById(R.id.main_activity_container);
             tabletHomeButton = (Button) findViewById(R.id.tablet_home_button);
             tabletAboutButton = (Button) findViewById(R.id.tablet_about_button);
             tabletBlacklistButton = (Button) findViewById(R.id.tablet_blacklist_button);
 
+            showFragment(MAIN, false);
+
             tabletHomeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     showFragment(MAIN, false);
-                    mapContainer.setVisibility(View.VISIBLE);
-                    fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
-                            0, LinearLayout.LayoutParams.MATCH_PARENT, 3
-                    ));
+                    lastFrag = MAIN;
+
+
                 }
             });
 
@@ -140,10 +142,7 @@ public class MainActivity extends ActionBarActivity
                 @Override
                 public void onClick(View view) {
                     showFragment(ABOUT, false);
-                    mapContainer.setVisibility(View.GONE);
-                    fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
-                            0, LinearLayout.LayoutParams.MATCH_PARENT, 10
-                    ));
+                    lastFrag = ABOUT;
                 }
             });
 
@@ -151,10 +150,8 @@ public class MainActivity extends ActionBarActivity
                 @Override
                 public void onClick(View view) {
                     showFragment(BLACKLIST, false);
-                    mapContainer.setVisibility(View.GONE);
-                    fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
-                            0, LinearLayout.LayoutParams.MATCH_PARENT, 10
-                    ));
+                    lastFrag = BLACKLIST;
+
                 }
             });
         }
@@ -232,11 +229,11 @@ public class MainActivity extends ActionBarActivity
                 .build();
     }
 
-    // TODO: record the marker/restaurant results and show it when activity is resumed.
     @Override
     public void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
+        if (lastFrag != -1) showFragment(lastFrag, false);
     }
 
     @Override
@@ -376,6 +373,9 @@ public class MainActivity extends ActionBarActivity
                 savedInstanceState.getDouble(LNG_TAG));
         prevLatLng = prevCameraPos;
 
+        if (tabletLayout) lastFrag = savedInstanceState.getInt(LAST_FRAG_TAG);
+
+
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -386,6 +386,8 @@ public class MainActivity extends ActionBarActivity
 
         outState.putDouble(LAT_TAG, lat);
         outState.putDouble(LNG_TAG, lng);
+
+        if (tabletLayout) outState.putInt(LAST_FRAG_TAG, lastFrag);
 
         super.onSaveInstanceState(outState);
     }
@@ -448,6 +450,18 @@ public class MainActivity extends ActionBarActivity
         for (int i = 0; i < fragments.length; i++) {
             if (i == fragmentIndex) {
                 transaction.show(fragments[i]);
+                if (i == MAIN) {
+                    mapContainer.setVisibility(View.VISIBLE);
+                    fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
+                            0, LinearLayout.LayoutParams.MATCH_PARENT, 3
+                    ));
+                }
+                else {
+                    mapContainer.setVisibility(View.GONE);
+                    fragmentContainer.setLayoutParams(new LinearLayout.LayoutParams(
+                            0, LinearLayout.LayoutParams.MATCH_PARENT, 10
+                    ));
+                }
             } else {
                 transaction.hide(fragments[i]);
             }

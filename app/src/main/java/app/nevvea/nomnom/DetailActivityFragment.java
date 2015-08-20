@@ -8,8 +8,13 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -27,7 +32,9 @@ public class DetailActivityFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>{
     static final String DETAIL_URI = "DETAIL_URI";
 
+    ShareActionProvider mShareActionProvider;
     private Uri mUri;
+    String mRestaurant;
     private static final int DETAIL_LOADER = 0;
 
     private static final String[] DETAIL_COLUMNS = {
@@ -53,6 +60,7 @@ public class DetailActivityFragment extends Fragment
     BootstrapButton yelpButton;
 
     public DetailActivityFragment() {
+        this.setHasOptionsMenu(true);
     }
 
     @Override
@@ -61,7 +69,6 @@ public class DetailActivityFragment extends Fragment
         Bundle arguments = getArguments();
         if (arguments != null) {
             mUri = arguments.getParcelable(DetailActivityFragment.DETAIL_URI);
-            Log.d("detail check 1", mUri.toString());
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -150,11 +157,42 @@ public class DetailActivityFragment extends Fragment
                 });
             } else mapButton.setBootstrapButtonEnabled(false);
 
+            mRestaurant = String.format("Restaurant Name: %s \n Phone: %s \n" +
+                    " Address: %s", restName, restPhone, restAddr);
+
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareIntent());
+            }
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_detail_fragment, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+
+        // Get the provider and hold onto it to set/change the share intent.
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
+        if (mRestaurant != null) {
+            mShareActionProvider.setShareIntent(createShareIntent());
+        }
+    }
+
+    private Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mRestaurant + " #NomNom");
+        return shareIntent;
     }
 }
