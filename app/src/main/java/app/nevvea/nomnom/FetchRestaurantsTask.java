@@ -2,16 +2,9 @@ package app.nevvea.nomnom;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.yelp.clientlib.entities.Business;
 import com.yelp.clientlib.entities.SearchResponse;
-
-import org.json.JSONException;
-
-import java.util.HashMap;
-
-import app.nevvea.nomnom.data.SearchResult;
 
 /**
  * AsyncTask that calls Yelp Api and gets result back
@@ -30,7 +23,7 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, Business>{
     /**
      * Calls onPostExecute
      * @param params Lat and Lng
-     * @return A SearchResult object that contains a restaurant's name, id and latlng
+     * @return a Yelp Business object
      */
     @Override
     protected Business doInBackground(Double... params) {
@@ -44,7 +37,7 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, Business>{
     /**
      * Called by doInBackground
      * When the result gets back from Yelp we pass it back to MainActivityFragment
-     * @param result A SearchResult object that contains a restaurant's name, id and latlng
+     * @param result a Yelp Business object
      */
     @Override
     protected void onPostExecute(Business result) {

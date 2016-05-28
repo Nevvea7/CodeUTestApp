@@ -1,17 +1,19 @@
 package app.nevvea.nomnom;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,9 +36,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import app.nevvea.nomnom.data.DataContract;
-import app.nevvea.nomnom.data.SearchResult;
+import com.yelp.clientlib.entities.Business;
 
 
 public class MainActivity extends ActionBarActivity
@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity
     private static final int MAIN = 0;
     private static final int ABOUT = 1;
     private static final int BLACKLIST = 2;
-    private static final int FRAGMENT_COUNT = BLACKLIST +1;
+    private static final int FRAGMENT_COUNT = BLACKLIST + 1;
     private int lastFrag = -1;
 
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
@@ -121,7 +121,7 @@ public class MainActivity extends ActionBarActivity
             fragments[BLACKLIST] = bf;
 
 
-            fragmentContainer = (LinearLayout)findViewById(R.id.main_activity_container);
+            fragmentContainer = (LinearLayout) findViewById(R.id.main_activity_container);
             tabletHomeButton = (Button) findViewById(R.id.tablet_home_button);
             tabletAboutButton = (Button) findViewById(R.id.tablet_about_button);
             tabletBlacklistButton = (Button) findViewById(R.id.tablet_blacklist_button);
@@ -154,8 +154,7 @@ public class MainActivity extends ActionBarActivity
 
                 }
             });
-        }
-        else {
+        } else {
             tabletLayout = false;
             // pass the GoogleApiClient to MainActivityFragment
             mFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.activity_fragment);
@@ -169,15 +168,13 @@ public class MainActivity extends ActionBarActivity
             public void onClick(View view) {
                 if (mGoogleApiClient.isConnected()) {
 
-                    if (Utility.isConnectedToInternet(mContext)){
+                    if (Utility.isConnectedToInternet(mContext)) {
                         curLatitude = mMap.getCameraPosition().target.latitude;
                         curLongitude = mMap.getCameraPosition().target.longitude;
 
                         mFragment.setLatLng(curLatitude, curLongitude);
                         mFragment.onLocationChaged(curLatitude, curLongitude);
-                    }
-
-                    else {
+                    } else {
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
                         alertDialogBuilder
                                 .setMessage("No internet connection! Please check your settings")
@@ -195,8 +192,7 @@ public class MainActivity extends ActionBarActivity
                         alertDialog.show();
                     }
 
-                }
-                else {
+                } else {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
                     alertDialogBuilder
                             .setMessage("No internet connection! Please check your settings")
@@ -253,6 +249,16 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(this);
         mFragment.setmMap(googleMap);
@@ -270,8 +276,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     /**
-    * Implementation of {@link com.google.android.gms.location.LocationListener}.
-    */
+     * Implementation of {@link com.google.android.gms.location.LocationListener}.
+     */
     @Override
     public void onLocationChanged(Location location) {
         curLongitude = location.getLongitude();
@@ -287,10 +293,20 @@ public class MainActivity extends ActionBarActivity
      */
     @Override
     public void onConnected(Bundle connectionHint) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         LocationServices.FusedLocationApi.requestLocationUpdates(
-        mGoogleApiClient,
-        REQUEST,
-        this);  // LocationListener;
+                mGoogleApiClient,
+                REQUEST,
+                this);  // LocationListener;
 
         mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
@@ -398,15 +414,14 @@ public class MainActivity extends ActionBarActivity
      *             can query the database with the url
      */
     @Override
-    public void onItemSelected(Uri mUri, SearchResult searchResult) {
+    public void onItemSelected(Uri mUri, Business searchResult) {
         Bundle bundle = new Bundle();
-        bundle.putDouble(DetailActivity.REST_LAT_TAG, searchResult.getLatLng().latitude);
-        bundle.putDouble(DetailActivity.REST_LNG_TAG, searchResult.getLatLng().longitude);
-        bundle.putString(DetailActivity.REST_NAME_TAG, searchResult.getRestName());
+        bundle.putDouble(DetailActivity.REST_LAT_TAG, searchResult.location().coordinate().latitude());
+        bundle.putDouble(DetailActivity.REST_LNG_TAG, searchResult.location().coordinate().longitude());
+        bundle.putString(DetailActivity.REST_NAME_TAG, searchResult.name());
         Intent intent = new Intent(this, DetailActivity.class)
                 .setData(mUri)
                 .putExtra(DetailActivity.DETAIL_BUNDLE_TAG, bundle);
-
         startActivity(intent);
     }
 

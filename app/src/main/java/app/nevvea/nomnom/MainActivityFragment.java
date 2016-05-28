@@ -18,10 +18,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.yelp.clientlib.entities.Business;
-import com.yelp.clientlib.entities.SearchResponse;
 
 import app.nevvea.nomnom.data.DataContract;
-import app.nevvea.nomnom.data.SearchResult;
 
 
 /**
@@ -38,6 +36,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     private static final String REST_ID_TAG = "REST_ID_TAG";
     private static final String REST_LAT = "REST_LAT";
     private static final String REST_LNG = "REST_LNG";
+    private static final String BUSI_TAG = "BUSI_TAG";
 
     TextView yelpResultTextView;
     TextView instructionTextView;
@@ -47,7 +46,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
     double curLongitude;
     double curLatitude;
-    SearchResult mSearchResult;
+
     Business mBusiness;
 
     Boolean hasRestaurant = false;
@@ -75,11 +74,11 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         showDetailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mSearchResult != null) {
+                if (mBusiness != null) {
                     ((Callback) getActivity())
                             .onItemSelected(DataContract.DetailEntry.buildDetailWithId(
-                                    mSearchResult.getRestID()
-                            ), mSearchResult);
+                                    mBusiness.id()
+                            ), mBusiness);
                 }
             }
         });
@@ -89,12 +88,12 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             @Override
             public void onClick(View view) {
                 // check if the search result returned null
-                if (mSearchResult != null) {
+                if (mBusiness != null) {
                     // add this restaurant to blacklist
                     ContentValues historyValues = new ContentValues();
 
-                    historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_ID, mSearchResult.getRestID());
-                    historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME, mSearchResult.getRestName());
+                    historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_ID, mBusiness.id());
+                    historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME, mBusiness.id());
 
                     Uri uri = getActivity().getContentResolver().insert(DataContract.HistoryEntry.CONTENT_URI,
                             historyValues);
@@ -139,10 +138,11 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         outState.putBoolean(HAS_REST_TAG, hasRestaurant);
         outState.putBoolean(SEARCHED_TAG, searched);
         if (hasRestaurant) {
-            outState.putString(REST_ID_TAG, mSearchResult.getRestID());
-            outState.putString(REST_NAME_TAG, mSearchResult.getRestName());
-            outState.putDouble(REST_LAT, mSearchResult.getLatLng().latitude);
-            outState.putDouble(REST_LNG, mSearchResult.getLatLng().longitude);
+            outState.putString(REST_ID_TAG, mBusiness.id());
+            outState.putString(REST_NAME_TAG, mBusiness.name());
+            outState.putDouble(REST_LAT, mBusiness.location().coordinate().latitude());
+            outState.putDouble(REST_LNG, mBusiness.location().coordinate().longitude());
+            outState.putSerializable(BUSI_TAG, mBusiness);
         }
         super.onSaveInstanceState(outState);
     }
@@ -163,16 +163,19 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             showDetailButton.setVisibility(View.GONE);
         }
         if (hasRestaurant) {
-            mSearchResult = new SearchResult(savedInstanceState.getString(REST_NAME_TAG),
-                    new LatLng(savedInstanceState.getDouble(REST_LAT), savedInstanceState.getDouble(REST_LNG)),
-                    savedInstanceState.getString(REST_ID_TAG));
+
+            mBusiness = (Business) savedInstanceState.getSerializable(BUSI_TAG);
+
             instructionTextView.setVisibility(View.GONE);
             linearContainer.setVisibility(View.VISIBLE);
             addToBlacklistButton.setVisibility(View.VISIBLE);
-            yelpResultTextView.setText(mSearchResult.getRestName());
+            yelpResultTextView.setText(mBusiness.name());
             showDetailButton.setVisibility(View.VISIBLE);
-            if (mSearchResult.getLatLng() != null) {
-                ((Callback) getActivity()).showMarkerOnMap(mSearchResult.getLatLng());
+            if (mBusiness.location() != null && mBusiness.location().coordinate() != null) {
+                ((Callback) getActivity()).showMarkerOnMap(new LatLng(
+                        mBusiness.location().coordinate().latitude(),
+                        mBusiness.location().coordinate().longitude()
+                ));
             }
         }
 
@@ -203,6 +206,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             if (result.location() != null) {
                 mMap.addMarker(new MarkerOptions()
                     .position(latLng));
+
                 LatLngBounds.Builder llBuilder = LatLngBounds.builder();
                 llBuilder.include(mMap.getCameraPosition().target);
                 llBuilder.include(latLng);
@@ -220,7 +224,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        void onItemSelected(Uri mUri, SearchResult searchResult);
+        void onItemSelected(Uri mUri, Business searchResult);
 
         void showMarkerOnMap(LatLng latLng);
 
