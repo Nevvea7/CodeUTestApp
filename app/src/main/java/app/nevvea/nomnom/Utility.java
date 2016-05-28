@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.yelp.clientlib.entities.Business;
+import com.yelp.clientlib.entities.SearchResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +19,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
@@ -133,6 +136,21 @@ public class Utility {
         Log.d("Utility check", "FetchRestaurantTask Complete. " + inserted + " Inserted");
 
         return searchResult;
+    }
+
+    public static Business processSearchResponse(SearchResponse response, Context mContext) {
+        if (response == null) return null;
+
+        ArrayList<Business> businesses = response.businesses();
+        int numOfRes = businesses.size();
+        if (numOfRes == 0) return null;
+
+        Random random = new Random();
+        int index = random.nextInt(numOfRes);
+        while (isInBlacklist(businesses.get(index).id(), mContext)) {
+            index = random.nextInt(numOfRes);
+        }
+        return businesses.get(index);
     }
 
     /**

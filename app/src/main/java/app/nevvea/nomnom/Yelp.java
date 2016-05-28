@@ -1,14 +1,17 @@
 package app.nevvea.nomnom;
 
 import android.content.Context;
-import android.util.Log;
 
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.oauth.OAuthService;
+import com.yelp.clientlib.connection.YelpAPI;
+import com.yelp.clientlib.connection.YelpAPIFactory;
+import com.yelp.clientlib.entities.SearchResponse;
+import com.yelp.clientlib.entities.options.CoordinateOptions;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
 
 /**
  * Customized Yelp API requests
@@ -16,15 +19,15 @@ import org.scribe.oauth.OAuthService;
  */
 public class Yelp {
 
-    OAuthService service;
-    Token accessToken;
-
-    private static final String API_HOST = "api.yelp.com";
-    private static final String SEARCH_PATH = "/v2/search";
+    YelpAPI mYelpApi;
 
     public static Yelp getYelp(Context context) {
-        return new Yelp(context.getString(R.string.consumer_key), context.getString(R.string.consumer_secret),
-                context.getString(R.string.token), context.getString(R.string.token_secret));
+        YelpAPIFactory apiFactory = new YelpAPIFactory(context.getString(R.string.consumer_key),
+                context.getString(R.string.consumer_secret),
+                context.getString(R.string.token),
+                context.getString(R.string.token_secret));
+        YelpAPI yelpAPI = apiFactory.createAPI();
+        return new Yelp(yelpAPI);
     }
 
     /**
@@ -32,14 +35,11 @@ public class Yelp {
      *
      * OAuth credentials are available from the developer site, under Manage API access (version 2 API).
      *
-     * @param consumerKey Consumer key
-     * @param consumerSecret Consumer secret
-     * @param token Token
-     * @param tokenSecret Token secret
+     * @param
+     *
      */
-    public Yelp(String consumerKey, String consumerSecret, String token, String tokenSecret) {
-        this.service = new ServiceBuilder().provider(YelpApi2.class).apiKey(consumerKey).apiSecret(consumerSecret).build();
-        this.accessToken = new Token(token, tokenSecret);
+    public Yelp(YelpAPI yelpAPI) {
+        mYelpApi = yelpAPI;
     }
 
     /**
@@ -50,14 +50,28 @@ public class Yelp {
      * @param longitude Longitude
      * @return JSON string response
      */
-    public String search(String term, double latitude, double longitude) {
-        OAuthRequest request = new OAuthRequest(Verb.GET, "http://" + API_HOST + SEARCH_PATH);
-        request.addQuerystringParameter("category_filter", term);
-        request.addQuerystringParameter("ll", latitude + "," + longitude);
-        request.addQuerystringParameter("radius_filter", "1600");
-        this.service.signRequest(this.accessToken, request);
-        Response response = request.send();
-        return response.getBody();
+    public SearchResponse search(String term, double latitude, double longitude) {
+        Map<String, String> params = new HashMap<>();
+
+        // general params
+        params.put("category_filter", term);
+        params.put("limit", "10");
+
+        // coordinates
+        CoordinateOptions coordinate = CoordinateOptions.builder()
+                .latitude(latitude)
+                .longitude(longitude).build();
+
+        Call<SearchResponse> call = mYelpApi.search(coordinate, params);
+
+        SearchResponse response = null;
+        try {
+            response = call.execute().body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return response;
     }
 
 }

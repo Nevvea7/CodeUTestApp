@@ -17,6 +17,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.yelp.clientlib.entities.Business;
+import com.yelp.clientlib.entities.SearchResponse;
 
 import app.nevvea.nomnom.data.DataContract;
 import app.nevvea.nomnom.data.SearchResult;
@@ -46,6 +48,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     double curLongitude;
     double curLatitude;
     SearchResult mSearchResult;
+    Business mBusiness;
 
     Boolean hasRestaurant = false;
     Boolean searched = false;
@@ -178,8 +181,8 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
     // called by FetchRestaurantsTask in PostExecute
     @Override
-    public void onTaskFinished(SearchResult result) {
-        mSearchResult = result;
+    public void onTaskFinished(Business result) {
+        mBusiness = result;
         // if can't find any restaurants around then tell the user to try somewhere else
         if (result == null) {
             hasRestaurant = false;
@@ -191,16 +194,18 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         // if there is then show it on the map
         else {
             hasRestaurant = true;
-            yelpResultTextView.setText(result.getRestName());
+            yelpResultTextView.setText(result.name());
             linearContainer.setVisibility(View.VISIBLE);
             showDetailButton.setVisibility(View.VISIBLE);
             addToBlacklistButton.setVisibility(View.VISIBLE);
-            if (result.getLatLng() != null) {
+            LatLng latLng = new LatLng(result.location().coordinate().latitude(),
+                    result.location().coordinate().longitude());
+            if (result.location() != null) {
                 mMap.addMarker(new MarkerOptions()
-                    .position(result.getLatLng()));
+                    .position(latLng));
                 LatLngBounds.Builder llBuilder = LatLngBounds.builder();
                 llBuilder.include(mMap.getCameraPosition().target);
-                llBuilder.include(result.getLatLng());
+                llBuilder.include(latLng);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llBuilder.build(), 50));
             }
         }

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.yelp.clientlib.entities.Business;
+import com.yelp.clientlib.entities.SearchResponse;
+
 import org.json.JSONException;
 
 import java.util.HashMap;
@@ -15,7 +18,7 @@ import app.nevvea.nomnom.data.SearchResult;
  * Also calls Utility.processJson
  * Created by Anna on 7/31/15.
  */
-public class FetchRestaurantsTask extends AsyncTask<Double, Void, SearchResult>{
+public class FetchRestaurantsTask extends AsyncTask<Double, Void, Business>{
     private Context mContext;
     MainActivityFragment mFragment;
 
@@ -30,17 +33,12 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, SearchResult>{
      * @return A SearchResult object that contains a restaurant's name, id and latlng
      */
     @Override
-    protected SearchResult doInBackground(Double... params) {
+    protected Business doInBackground(Double... params) {
         // call yelp api
         Yelp yelp = Yelp.getYelp(mContext);
-        String businesses = yelp.search(mContext.getResources().getString(R.string.yelp_search_term),
-                params[0], params[1]);
-        try {
-            return Utility.processJson(businesses, mContext);
-        } catch (JSONException e) {
-            Log.e("json error", e.toString());
-            return null;
-        }
+        SearchResponse response = yelp.search(mContext.getString(R.string.yelp_search_term), params[0], params[1]);
+
+        return Utility.processSearchResponse(response, mContext);
     }
 
     /**
@@ -49,7 +47,7 @@ public class FetchRestaurantsTask extends AsyncTask<Double, Void, SearchResult>{
      * @param result A SearchResult object that contains a restaurant's name, id and latlng
      */
     @Override
-    protected void onPostExecute(SearchResult result) {
+    protected void onPostExecute(Business result) {
         mFragment.onTaskFinished(result);
     }
 }
