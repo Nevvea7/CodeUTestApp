@@ -51,8 +51,7 @@ public class MainActivity extends ActionBarActivity
     private static final String LAT_TAG = "LAT_TAG";
     private static final String LNG_TAG = "LNG_TAG";
     private static final String LAST_FRAG_TAG = "LAST_FRAG_TAG";
-    private static final String LAST_RES = "LAST_RES";
-    private static final String MAP_TAG = "MAP_TAG";
+    private static final String BUSI_TAG = "BUSI_TAG";
 
     private static final int MAIN = 0;
     private static final int ABOUT = 1;
@@ -416,9 +415,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onItemSelected(Uri mUri, Business searchResult) {
         Bundle bundle = new Bundle();
-        bundle.putDouble(DetailActivity.REST_LAT_TAG, searchResult.location().coordinate().latitude());
-        bundle.putDouble(DetailActivity.REST_LNG_TAG, searchResult.location().coordinate().longitude());
-        bundle.putString(DetailActivity.REST_NAME_TAG, searchResult.name());
+        bundle.putSerializable(BUSI_TAG, searchResult);
         Intent intent = new Intent(this, DetailActivity.class)
                 .setData(mUri)
                 .putExtra(DetailActivity.DETAIL_BUNDLE_TAG, bundle);

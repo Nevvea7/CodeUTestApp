@@ -32,10 +32,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
     private static final String HAS_REST_TAG = "HAS_REST_TAG";
     private static final String SEARCHED_TAG = "SEARCHED_TAG";
-    private static final String REST_NAME_TAG = "REST_NAME_TAG";
-    private static final String REST_ID_TAG = "REST_ID_TAG";
-    private static final String REST_LAT = "REST_LAT";
-    private static final String REST_LNG = "REST_LNG";
     private static final String BUSI_TAG = "BUSI_TAG";
 
     TextView yelpResultTextView;
@@ -138,10 +134,6 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
         outState.putBoolean(HAS_REST_TAG, hasRestaurant);
         outState.putBoolean(SEARCHED_TAG, searched);
         if (hasRestaurant) {
-            outState.putString(REST_ID_TAG, mBusiness.id());
-            outState.putString(REST_NAME_TAG, mBusiness.name());
-            outState.putDouble(REST_LAT, mBusiness.location().coordinate().latitude());
-            outState.putDouble(REST_LNG, mBusiness.location().coordinate().longitude());
             outState.putSerializable(BUSI_TAG, mBusiness);
         }
         super.onSaveInstanceState(outState);
@@ -171,11 +163,9 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             addToBlacklistButton.setVisibility(View.VISIBLE);
             yelpResultTextView.setText(mBusiness.name());
             showDetailButton.setVisibility(View.VISIBLE);
-            if (mBusiness.location() != null && mBusiness.location().coordinate() != null) {
-                ((Callback) getActivity()).showMarkerOnMap(new LatLng(
-                        mBusiness.location().coordinate().latitude(),
-                        mBusiness.location().coordinate().longitude()
-                ));
+            LatLng latLng = Utility.getLatLng(mBusiness);
+            if (latLng != null) {
+                ((Callback) getActivity()).showMarkerOnMap(latLng);
             }
         }
 
@@ -201,9 +191,9 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             linearContainer.setVisibility(View.VISIBLE);
             showDetailButton.setVisibility(View.VISIBLE);
             addToBlacklistButton.setVisibility(View.VISIBLE);
-            LatLng latLng = new LatLng(result.location().coordinate().latitude(),
-                    result.location().coordinate().longitude());
-            if (result.location() != null) {
+            LatLng latLng = Utility.getLatLng(mBusiness);
+
+            if (latLng != null) {
                 mMap.addMarker(new MarkerOptions()
                     .position(latLng));
 

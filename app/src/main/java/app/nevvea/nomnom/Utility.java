@@ -10,11 +10,9 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.yelp.clientlib.entities.Business;
+import com.yelp.clientlib.entities.Coordinate;
 import com.yelp.clientlib.entities.Location;
 import com.yelp.clientlib.entities.SearchResponse;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -98,30 +96,11 @@ public class Utility {
         }
     }
 
-
-    /**
-     * Get LatLng from a JSONObject
-     * @param coordinates
-     * @return
-     */
-    private static LatLng geLatLngFromJson(JSONObject coordinates) {
-        try {
-            double lat = coordinates.getDouble("latitude");
-            double lng = coordinates.getDouble("longitude");
-            return new LatLng(lat, lng);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Format the url returned from yelp since it has escape characters
-     * @param jsonUrl
-     * @return
-     */
-    private static String getUrlFromJson(String jsonUrl) {
-        return jsonUrl.replace("\\", "");
+    public static LatLng getLatLng(Business business) {
+        if (business.location() == null || business.location().coordinate() == null) return null;
+        Coordinate coordinate = business.location().coordinate();
+        if (coordinate.latitude() == null || coordinate.longitude() == null) return null;
+        return new LatLng(coordinate.latitude(), coordinate.longitude());
     }
 
     /**

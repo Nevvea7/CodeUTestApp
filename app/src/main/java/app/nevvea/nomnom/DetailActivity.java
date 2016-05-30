@@ -13,6 +13,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.yelp.clientlib.entities.Business;
 
 import app.nevvea.nomnom.R;
 
@@ -23,9 +24,11 @@ public class DetailActivity extends ActionBarActivity
     static final String REST_LAT_TAG = "REST_LAT_TAG";
     static final String REST_LNG_TAG = "REST_LNG_TAG";
     static final String DETAIL_BUNDLE_TAG = "DETAIL_BUNDLE_TAG";
+    private static final String BUSI_TAG = "BUSI_TAG";
 
     private GoogleMap mMap;
     private LatLng curLatLng;
+    private Business mBusiness;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +41,9 @@ public class DetailActivity extends ActionBarActivity
 
             Bundle extras = getIntent().getBundleExtra(DETAIL_BUNDLE_TAG);
             if (extras != null) {
-                getSupportActionBar().setTitle(extras.getString(REST_NAME_TAG));
-                curLatLng = new LatLng(extras.getDouble(REST_LAT_TAG), extras.getDouble(REST_LNG_TAG));
+                mBusiness = (Business) extras.getSerializable(BUSI_TAG);
+                getSupportActionBar().setTitle(mBusiness.name());
+                curLatLng = Utility.getLatLng(mBusiness);
             }
 
             DetailActivityFragment fragment = new DetailActivityFragment();
