@@ -20,9 +20,6 @@ import app.nevvea.nomnom.R;
 public class DetailActivity extends ActionBarActivity
             implements OnMapReadyCallback{
 
-    static final String REST_NAME_TAG = "REST_NAME_TAG";
-    static final String REST_LAT_TAG = "REST_LAT_TAG";
-    static final String REST_LNG_TAG = "REST_LNG_TAG";
     static final String DETAIL_BUNDLE_TAG = "DETAIL_BUNDLE_TAG";
     private static final String BUSI_TAG = "BUSI_TAG";
 

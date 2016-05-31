@@ -196,9 +196,12 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
             if (latLng != null) {
                 mMap.addMarker(new MarkerOptions()
                     .position(latLng));
-
+                if (mMap.getProjection().getVisibleRegion().latLngBounds.contains(latLng))
+                    return;
                 LatLngBounds.Builder llBuilder = LatLngBounds.builder();
-                llBuilder.include(mMap.getCameraPosition().target);
+                llBuilder.include(mMap.getProjection().getVisibleRegion().latLngBounds.northeast);
+                llBuilder.include(mMap.getProjection().getVisibleRegion().latLngBounds.southwest);
+
                 llBuilder.include(latLng);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llBuilder.build(), 50));
             }
