@@ -38,6 +38,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.yelp.clientlib.entities.Business;
 
+import app.nevvea.nomnom.util.DialogBuilder;
+
 
 public class MainActivity extends ActionBarActivity
         implements GoogleApiClient.ConnectionCallbacks,
@@ -88,7 +90,6 @@ public class MainActivity extends ActionBarActivity
             .setInterval(5000)         // 5 seconds
             .setFastestInterval(16)    // 16ms = 60fps
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    private LatLng latLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,39 +175,15 @@ public class MainActivity extends ActionBarActivity
                         mFragment.setLatLng(curLatitude, curLongitude);
                         mFragment.onLocationChaged(curLatitude, curLongitude);
                     } else {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
-                        alertDialogBuilder
-                                .setMessage("No internet connection! Please check your settings")
-                                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.cancel();
-                                    }
-                                });
-
-                        //create alert dialog
-                        AlertDialog alertDialog = alertDialogBuilder.create();
-
-                        //show it
-                        alertDialog.show();
+                        DialogBuilder
+                                .buildAlert(mContext, getString(R.string.no_internet_connection))
+                                .show();
                     }
 
                 } else {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
-                    alertDialogBuilder
-                            .setMessage("No internet connection! Please check your settings")
-                            .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            });
-
-                    //create alert dialog
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-
-                    //show it
-                    alertDialog.show();
+                    DialogBuilder
+                            .buildAlert(mContext, getString(R.string.no_internet_connection))
+                            .show();
                 }
             }
         });
