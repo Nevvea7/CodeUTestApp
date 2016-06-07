@@ -24,6 +24,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.squareup.picasso.Picasso;
 
 import app.nevvea.nomnom.data.DataContract.DetailEntry;
+import app.nevvea.nomnom.util.Utility;
 
 /**
  * Query the database and dispay details of our restaurants.

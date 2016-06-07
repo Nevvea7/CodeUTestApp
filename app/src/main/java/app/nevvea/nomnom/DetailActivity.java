@@ -1,7 +1,6 @@
 package app.nevvea.nomnom;
 
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -15,7 +14,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.yelp.clientlib.entities.Business;
 
-import app.nevvea.nomnom.R;
+import app.nevvea.nomnom.util.Utility;
 
 public class DetailActivity extends ActionBarActivity
             implements OnMapReadyCallback{

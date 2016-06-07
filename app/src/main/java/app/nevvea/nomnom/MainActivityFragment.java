@@ -20,6 +20,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.yelp.clientlib.entities.Business;
 
 import app.nevvea.nomnom.data.DataContract;
+import app.nevvea.nomnom.util.Utility;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 /**
@@ -34,10 +38,15 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
     private static final String SEARCHED_TAG = "SEARCHED_TAG";
     private static final String BUSI_TAG = "BUSI_TAG";
 
+    @BindView(R.id.cur_location_result)
     TextView yelpResultTextView;
+    @BindView(R.id.instruction_text)
     TextView instructionTextView;
+    @BindView(R.id.add_to_blacklist_button)
     BootstrapButton addToBlacklistButton;
+    @BindView(R.id.goto_detail_button)
     BootstrapButton showDetailButton;
+    @BindView(R.id.mainfragment_linear)
     LinearLayout linearContainer;
 
     double curLongitude;
@@ -62,43 +71,7 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        instructionTextView = (TextView) rootView.findViewById(R.id.instruction_text);
-        linearContainer = (LinearLayout) rootView.findViewById(R.id.mainfragment_linear);
-        yelpResultTextView = (TextView) rootView.findViewById(R.id.cur_location_result);
-
-        showDetailButton = (BootstrapButton) rootView.findViewById(R.id.goto_detail_button);
-        showDetailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mBusiness != null) {
-                    ((Callback) getActivity())
-                            .onItemSelected(DataContract.DetailEntry.buildDetailWithId(
-                                    mBusiness.id()
-                            ), mBusiness);
-                }
-            }
-        });
-
-        addToBlacklistButton = (BootstrapButton) rootView.findViewById(R.id.add_to_blacklist_button);
-        addToBlacklistButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // check if the search result returned null
-                if (mBusiness != null) {
-                    // add this restaurant to blacklist
-                    ContentValues historyValues = new ContentValues();
-
-                    historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_ID, mBusiness.id());
-                    historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME, mBusiness.id());
-
-                    Uri uri = getActivity().getContentResolver().insert(DataContract.HistoryEntry.CONTENT_URI,
-                            historyValues);
-
-                    // call random function again since the user doesn't want this restaurant
-                    onLocationChaged(curLatitude, curLongitude);
-                }
-            }
-        });
+        ButterKnife.bind(this, rootView);
 
         return rootView;
     }
@@ -206,6 +179,32 @@ public class MainActivityFragment extends Fragment implements OnTaskFinishedList
                 mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llBuilder.build(), 50));
             }
         }
+    }
+
+    @OnClick(R.id.goto_detail_button)
+    void showDetail() {
+        if (mBusiness == null) return;
+        ((Callback) getActivity())
+                .onItemSelected(DataContract.DetailEntry.buildDetailWithId(
+                        mBusiness.id()
+                ), mBusiness);
+    }
+
+    @OnClick(R.id.add_to_blacklist_button)
+    void addToBlackList() {
+        // check if the search result returned null
+        if (mBusiness == null) return;
+        // add this restaurant to blacklist
+        ContentValues historyValues = new ContentValues();
+
+        historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_ID, mBusiness.id());
+        historyValues.put(DataContract.HistoryEntry.COLUMN_RESTAURANT_NAME, mBusiness.id());
+
+        Uri uri = getActivity().getContentResolver().insert(DataContract.HistoryEntry.CONTENT_URI,
+                historyValues);
+
+        // call random function again since the user doesn't want this restaurant
+        onLocationChaged(curLatitude, curLongitude);
     }
 
     /**

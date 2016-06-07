@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import com.yelp.clientlib.entities.Business;
 import com.yelp.clientlib.entities.SearchResponse;
 
+import app.nevvea.nomnom.util.Utility;
+import app.nevvea.nomnom.util.Yelp;
+
 /**
  * AsyncTask that calls Yelp Api and gets result back
  * Also calls Utility.processJson

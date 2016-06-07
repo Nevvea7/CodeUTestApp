@@ -1,4 +1,4 @@
-package app.nevvea.nomnom;
+package app.nevvea.nomnom.util;
 
 import android.content.ContentValues;
 import android.content.Context;

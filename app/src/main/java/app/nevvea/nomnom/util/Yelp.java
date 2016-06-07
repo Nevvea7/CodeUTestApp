@@ -1,4 +1,4 @@
-package app.nevvea.nomnom;
+package app.nevvea.nomnom.util;
 
 import android.content.Context;
 
@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.nevvea.nomnom.R;
 import retrofit2.Call;
 
 /**

@@ -1,9 +1,7 @@
 package app.nevvea.nomnom;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -39,6 +37,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.yelp.clientlib.entities.Business;
 
 import app.nevvea.nomnom.util.DialogBuilder;
+import app.nevvea.nomnom.util.Utility;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class MainActivity extends ActionBarActivity
@@ -73,10 +75,12 @@ public class MainActivity extends ActionBarActivity
     LatLng prevLatLng;
     LatLng prevMarkerLatLng;
 
+    @BindView(R.id.get_location_button)
     BootstrapButton getResultButton;
     Button tabletHomeButton;
     Button tabletAboutButton;
     Button tabletBlacklistButton;
+    @BindView(R.id.main_map_container)
     RelativeLayout mapContainer;
     LinearLayout fragmentContainer;
 
@@ -95,7 +99,8 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        ButterKnife.bind(this);
+        ButterKnife.setDebug(true);
         mContext = this;
 
         buildGoogleApiClient();
@@ -105,55 +110,9 @@ public class MainActivity extends ActionBarActivity
                 (SupportMapFragment) fm.findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mapContainer = (RelativeLayout) findViewById(R.id.main_map_container);
-
         // if it's a tablet, setup the layout accordingly
         if (findViewById(R.id.main_activity_container) != null) {
-            tabletLayout = true;
-
-            MainActivityFragment mf = (MainActivityFragment) fm.findFragmentById(R.id.main_fragment);
-            BlackListActivityFragment bf = (BlackListActivityFragment) fm.findFragmentById(R.id.blacklist_fragment);
-            AboutActivityFragment af = (AboutActivityFragment) fm.findFragmentById(R.id.about_fragment);
-
-            mFragment = mf;
-            fragments[MAIN] = mf;
-            fragments[ABOUT] = af;
-            fragments[BLACKLIST] = bf;
-
-
-            fragmentContainer = (LinearLayout) findViewById(R.id.main_activity_container);
-            tabletHomeButton = (Button) findViewById(R.id.tablet_home_button);
-            tabletAboutButton = (Button) findViewById(R.id.tablet_about_button);
-            tabletBlacklistButton = (Button) findViewById(R.id.tablet_blacklist_button);
-
-            showFragment(MAIN, false);
-
-            tabletHomeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showFragment(MAIN, false);
-                    lastFrag = MAIN;
-
-
-                }
-            });
-
-            tabletAboutButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showFragment(ABOUT, false);
-                    lastFrag = ABOUT;
-                }
-            });
-
-            tabletBlacklistButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showFragment(BLACKLIST, false);
-                    lastFrag = BLACKLIST;
-
-                }
-            });
+            setupTabletLayout(fm);
         } else {
             tabletLayout = false;
             // pass the GoogleApiClient to MainActivityFragment
@@ -162,32 +121,59 @@ public class MainActivity extends ActionBarActivity
 
         mFragment.setmGoogleApiClient(mGoogleApiClient);
 
-        getResultButton = (BootstrapButton) findViewById(R.id.get_location_button);
         getResultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mGoogleApiClient.isConnected()) {
 
-                    if (Utility.isConnectedToInternet(mContext)) {
-                        curLatitude = mMap.getCameraPosition().target.latitude;
-                        curLongitude = mMap.getCameraPosition().target.longitude;
-
-                        mFragment.setLatLng(curLatitude, curLongitude);
-                        mFragment.onLocationChaged(curLatitude, curLongitude);
-                    } else {
-                        DialogBuilder
-                                .buildAlert(mContext, getString(R.string.no_internet_connection))
-                                .show();
-                    }
-
-                } else {
-                    DialogBuilder
-                            .buildAlert(mContext, getString(R.string.no_internet_connection))
-                            .show();
-                }
             }
         });
 
+    }
+
+    private void setupTabletLayout(FragmentManager fm) {
+        tabletLayout = true;
+
+        MainActivityFragment mf = (MainActivityFragment) fm.findFragmentById(R.id.main_fragment);
+        BlackListActivityFragment bf = (BlackListActivityFragment) fm.findFragmentById(R.id.blacklist_fragment);
+        AboutActivityFragment af = (AboutActivityFragment) fm.findFragmentById(R.id.about_fragment);
+
+        mFragment = mf;
+        fragments[MAIN] = mf;
+        fragments[ABOUT] = af;
+        fragments[BLACKLIST] = bf;
+
+
+        fragmentContainer = (LinearLayout) findViewById(R.id.main_activity_container);
+        tabletHomeButton = (Button) findViewById(R.id.tablet_home_button);
+        tabletAboutButton = (Button) findViewById(R.id.tablet_about_button);
+        tabletBlacklistButton = (Button) findViewById(R.id.tablet_blacklist_button);
+
+        showFragment(MAIN, false);
+
+        tabletHomeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFragment(MAIN, false);
+                lastFrag = MAIN;
+            }
+        });
+
+        tabletAboutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFragment(ABOUT, false);
+                lastFrag = ABOUT;
+            }
+        });
+
+        tabletBlacklistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFragment(BLACKLIST, false);
+                lastFrag = BLACKLIST;
+
+            }
+        });
     }
 
     /**
@@ -287,21 +273,9 @@ public class MainActivity extends ActionBarActivity
         mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (mLocation == null) {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder
-                    .setMessage("Can't get your location! If you'd like to continue, please either turn on location sharing or drag the map to where you want to eat.")
-                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-
-            //create alert dialog
-            AlertDialog alertDialog = alertDialogBuilder.create();
-
-            //show it
-            alertDialog.show();
+            DialogBuilder
+                    .buildAlert(mContext, getString(R.string.no_location))
+                    .show();
             return;
         }
         curLongitude = mLocation.getLongitude();
@@ -459,5 +433,26 @@ public class MainActivity extends ActionBarActivity
             transaction.addToBackStack(null);
         }
         transaction.commit();
+    }
+
+    @OnClick(R.id.get_location_button)
+    void getResult() {
+        if (!mGoogleApiClient.isConnected()) {
+            DialogBuilder
+                    .buildAlert(mContext, getString(R.string.no_internet_connection))
+                    .show();
+            return;
+        }
+        if (Utility.isConnectedToInternet(mContext)) {
+            curLatitude = mMap.getCameraPosition().target.latitude;
+            curLongitude = mMap.getCameraPosition().target.longitude;
+
+            mFragment.setLatLng(curLatitude, curLongitude);
+            mFragment.onLocationChaged(curLatitude, curLongitude);
+        } else {
+            DialogBuilder
+                    .buildAlert(mContext, getString(R.string.no_internet_connection))
+                    .show();
+        }
     }
 }

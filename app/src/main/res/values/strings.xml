@@ -13,6 +13,7 @@
     <string name="yelp_search_term">restaurants</string>
 
     <string name="no_internet_connection">No internet connection! Please check your settings</string>
+    <string name="no_location">Can't get your location! If you'd like to continue, please either turn on location sharing or drag the map to where you want to eat.</string>
 
     <string name="no_restaurant">There\'s no restaurant around this point. Try somewhere else!</string>
 </resources>
