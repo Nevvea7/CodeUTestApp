@@ -121,7 +121,7 @@ public class Utility {
         return locationSb.toString();
     }
 
-    static String getAddressQuery(String address) {
+    public static String getAddressQuery(String address) {
         try {
             return URLEncoder.encode(address, "utf-8");
         } catch (UnsupportedEncodingException e) {

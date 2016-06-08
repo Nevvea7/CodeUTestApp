@@ -7,11 +7,14 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -81,6 +84,7 @@ public class MainActivity extends ActionBarActivity
     Button tabletAboutButton;
     Button tabletBlacklistButton;
     @BindView(R.id.main_map_container)
+    @Nullable
     RelativeLayout mapContainer;
     LinearLayout fragmentContainer;
 
@@ -95,6 +99,8 @@ public class MainActivity extends ActionBarActivity
             .setFastestInterval(16)    // 16ms = 60fps
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+    private static final int PERMISSION_CODE_COARSE_LOCATION = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +110,7 @@ public class MainActivity extends ActionBarActivity
         mContext = this;
 
         buildGoogleApiClient();
+
 
         FragmentManager fm = getSupportFragmentManager();
         final SupportMapFragment mapFragment =
@@ -121,13 +128,13 @@ public class MainActivity extends ActionBarActivity
 
         mFragment.setmGoogleApiClient(mGoogleApiClient);
 
-        getResultButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            }, PERMISSION_CODE_COARSE_LOCATION);
+            return;
+        }
     }
 
     private void setupTabletLayout(FragmentManager fm) {
@@ -211,14 +218,8 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        Log.d("asking", "onmap");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -255,16 +256,14 @@ public class MainActivity extends ActionBarActivity
      */
     @Override
     public void onConnected(Bundle connectionHint) {
+        setupMapFocus();
+    }
+
+    private void setupMapFocus() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient,
                 REQUEST,
@@ -307,9 +306,22 @@ public class MainActivity extends ActionBarActivity
             }
 
         }
-
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case PERMISSION_CODE_COARSE_LOCATION: {
+                if (grantResults.length > 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    setupMapFocus();
+                }
+            }
+        }
+    }
     /**
      * Callback called when disconnected from GCore. Implementation of {@link com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks}.
      */
