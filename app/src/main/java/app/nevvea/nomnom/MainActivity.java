@@ -133,7 +133,6 @@ public class MainActivity extends ActionBarActivity
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
             }, PERMISSION_CODE_COARSE_LOCATION);
-            return;
         }
     }
 
@@ -317,7 +316,8 @@ public class MainActivity extends ActionBarActivity
                 if (grantResults.length > 1
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    setupMapFocus();
+                    if (mGoogleApiClient.isConnected())
+                        setupMapFocus();
                 }
             }
         }
@@ -328,7 +328,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onConnectionSuspended(int cause) {
             // Do nothing
-        }
+    }
 
     /**
      * Implementation of {@link com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener}.
@@ -336,14 +336,14 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         // Do nothing
-        }
+    }
 
     @Override
     public boolean onMyLocationButtonClick() {
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
-            }
+    }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
